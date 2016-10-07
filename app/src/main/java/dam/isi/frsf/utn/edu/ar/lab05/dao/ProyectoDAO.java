@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
@@ -37,6 +38,7 @@ public class ProyectoDAO {
 
     private ProyectoOpenHelper dbHelper;
     private SQLiteDatabase db;
+    private List<Usuario> listaUsuarios;
 
     public ProyectoDAO(Context c){
         this.dbHelper = new ProyectoOpenHelper(c);
@@ -87,8 +89,34 @@ public class ProyectoDAO {
         return null;
     }
 
+    // TODO DE ACA TOMAR LOS Usuarios
     public List<Usuario> listarUsuarios(){
-        return null;
+        try
+        {
+            open(false);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exploto la bd al abrirla");
+        }
+        Cursor result = db.rawQuery("SELECT _ID,NOMBRE,CORREO_ELECTRONICO FROM USUARIOS", null);
+        String nombreUsuario, emailUsuario;
+        Usuario nuevoUsuario;
+        listaUsuarios = new ArrayList<>();
+        int id;
+        System.out.println("Explote");
+        while (!result.moveToNext())
+        {
+           id = result.getInt(0);
+            nombreUsuario = result.getString(1);
+            emailUsuario = result.getString(2);
+            nuevoUsuario = new Usuario(id, nombreUsuario, emailUsuario);
+            System.out.println("ass"+id);
+            listaUsuarios.add(nuevoUsuario);
+        }
+        result.close();
+        return listarUsuarios();
+        //return new ArrayList<>();
     }
 
     public void finalizar(Integer idTarea){

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +16,21 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.util.concurrent.TimeUnit;
+
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 
 /**
  * Created by mdominguez on 06/10/16.
  */
-public class TareaCursorAdapter extends CursorAdapter {
+public class TareaCursorAdapter extends CursorAdapter implements View.OnClickListener{
     private LayoutInflater inflador;
     private ProyectoDAO myDao;
     private Context contexto;
+    private ToggleButton btnEstado;
+    private Long tArranqueTrabajo,tFinalTrabajo,tiempoTrabajado;
+    private int minutosTrabajados;
     public TareaCursorAdapter (Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
         myDao= dao;
@@ -54,8 +60,8 @@ public class TareaCursorAdapter extends CursorAdapter {
 
         final Button btnFinalizar = (Button)   view.findViewById(R.id.tareaBtnFinalizada);
         final Button btnEditar = (Button)   view.findViewById(R.id.tareaBtnEditarDatos);
-        ToggleButton btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
-
+        btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
+        btnEstado.setOnClickListener(this);
         nombre.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
         tiempoAsignado.setText(horasAsigandas*60 + " minutos");
@@ -95,6 +101,27 @@ public class TareaCursorAdapter extends CursorAdapter {
                 backGroundUpdate.start();
             }
         });
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        if(!btnEstado.isChecked())
+        {
+            tArranqueTrabajo= System.currentTimeMillis();
+        }
+        else
+        {
+            tFinalTrabajo=System.currentTimeMillis();
+            tiempoTrabajado=tFinalTrabajo-tArranqueTrabajo;
+            minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
+            guardarTiempoEnBd();
+        }
+    }
+    // TODO Implementar
+    private void guardarTiempoEnBd()
+    {
+
     }
 }
 
