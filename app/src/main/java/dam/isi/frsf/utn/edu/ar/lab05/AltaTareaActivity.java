@@ -24,16 +24,16 @@ public class AltaTareaActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
-        listaUsuarios = new ArrayList<Usuario>();
+        listaUsuarios = new ArrayList();
         proyectoDAO = new ProyectoDAO(this);
 
         listaUsuarios=proyectoDAO.listarUsuarios();
-        /*
+
         spinnerListaUsuarios = (Spinner) findViewById(R.id.spinnerUsuarios);
         adapterListaUsuarios = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,listaUsuarios);
         adapterListaUsuarios.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerListaUsuarios.setAdapter(adapterListaUsuarios);
-        */
+
     }
 
 }

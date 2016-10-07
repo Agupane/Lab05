@@ -91,32 +91,29 @@ public class ProyectoDAO {
 
     // TODO DE ACA TOMAR LOS Usuarios
     public List<Usuario> listarUsuarios(){
+        Usuario nuevoUsuario;
+        listaUsuarios = new ArrayList<>();
         try
         {
             open(false);
+            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaUsuariosMetadata._ID+","+ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO+","+ProyectoDBMetadata.TablaUsuariosMetadata.MAIL+ " FROM "+ProyectoDBMetadata.TABLA_USUARIOS,null);
+            while (result.moveToNext())
+            {
+                // Primer parameto el id, segundo el nombre y tercero el email
+                nuevoUsuario = new Usuario(result.getInt(0), result.getString(1), result.getString(2));
+                listaUsuarios.add(nuevoUsuario);
+            }
+            result.close();
         }
         catch(Exception e)
         {
             System.out.println("Exploto la bd al abrirla");
         }
-        Cursor result = db.rawQuery("SELECT _ID,NOMBRE,CORREO_ELECTRONICO FROM USUARIOS", null);
-        String nombreUsuario, emailUsuario;
-        Usuario nuevoUsuario;
-        listaUsuarios = new ArrayList<>();
-        int id;
-        System.out.println("Explote");
-        while (!result.moveToNext())
+        finally
         {
-           id = result.getInt(0);
-            nombreUsuario = result.getString(1);
-            emailUsuario = result.getString(2);
-            nuevoUsuario = new Usuario(id, nombreUsuario, emailUsuario);
-            System.out.println("ass"+id);
-            listaUsuarios.add(nuevoUsuario);
+            return listaUsuarios;
         }
-        result.close();
-        return listarUsuarios();
-        //return new ArrayList<>();
+
     }
 
     public void finalizar(Integer idTarea){
