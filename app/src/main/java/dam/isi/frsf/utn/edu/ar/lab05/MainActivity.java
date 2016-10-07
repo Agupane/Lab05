@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         lvTareas = (ListView) findViewById(R.id.listaTareas);
+        lvTareas.setClickable(true);
         registerForContextMenu(lvTareas);
     }
 
@@ -92,11 +93,29 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     @Override
+    /*
+        TODO Terminar de armar menu contextual
+     */
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
     {
         super.onCreateContextMenu(menu,v,menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_contextual,menu);
+        System.out.println("inflado");
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.OpcionEliminarTarea:
+            {
+                System.out.println("Eliminar tarea presionada");
+                break;
+            }
+            default: { break;}
+        }
+        return true;
     }
 
 }
