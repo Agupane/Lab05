@@ -13,10 +13,10 @@ public class Tarea {
     private Proyecto proyecto;
     private Prioridad prioridad;
     private Usuario responsable;
-
+    private String descripcion;
     public Tarea() {
     }
-    public Tarea(Boolean terminada, Integer horasEstimadas, Integer minutosTrabajados, Boolean finalizada, Proyecto proyecto, Prioridad prioridad, Usuario responsable) {
+    public Tarea(Boolean terminada, Integer horasEstimadas, Integer minutosTrabajados, Boolean finalizada, Proyecto proyecto, Prioridad prioridad, Usuario responsable, String descripcion) {
         this.id = id;
         this.terminada = terminada;
         this.horasEstimadas = horasEstimadas;
@@ -25,8 +25,9 @@ public class Tarea {
         this.proyecto = proyecto;
         this.prioridad = prioridad;
         this.responsable = responsable;
+        this.descripcion = descripcion;
     }
-    public Tarea(Integer id, Boolean terminada, Integer horasEstimadas, Integer minutosTrabajados, Boolean finalizada, Proyecto proyecto, Prioridad prioridad, Usuario responsable) {
+    public Tarea(Integer id, Boolean terminada, Integer horasEstimadas, Integer minutosTrabajados, Boolean finalizada, Proyecto proyecto, Prioridad prioridad, Usuario responsable, String descripcion) {
         this.id = id;
         this.terminada = terminada;
         this.horasEstimadas = horasEstimadas;
@@ -35,6 +36,7 @@ public class Tarea {
         this.proyecto = proyecto;
         this.prioridad = prioridad;
         this.responsable = responsable;
+        this.descripcion = descripcion;
     }
 
     public Integer getId() {
@@ -69,6 +71,7 @@ public class Tarea {
         this.minutosTrabajados = minutosTrabajados;
     }
 
+
     public Boolean getFinalizada() {
         return finalizada;
     }
@@ -100,4 +103,8 @@ public class Tarea {
     public void setResponsable(Usuario responsable) {
         this.responsable = responsable;
     }
+
+    public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
+
+    public String getDescripcion() { return this.descripcion;}
 }

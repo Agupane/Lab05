@@ -76,8 +76,29 @@ public class ProyectoDAO {
     /*
         TODO Implementar input de tarea
      */
-    public void nuevaTarea(Tarea t){
-        System.out.println("Guardo una tarea");
+    public void nuevaTarea(Tarea t)
+    {
+        ContentValues datosAGuardar = new ContentValues();
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS,t.getHorasEstimadas());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,0);
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA,t.getDescripcion());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD,t.getPrioridad().getId());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE,t.getResponsable().getId());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata. PROYECTO,t.getProyecto().getId());
+        open(true);
+        try {
+            db.insert(ProyectoDBMetadata.TABLA_TAREAS,null,datosAGuardar);
+            System.out.println("Guardo una tarea");
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("BD Exploto en el insert");
+        }
+        finally
+        {
+            close();
+        }
     }
 
     public void actualizarTarea(Tarea t){
