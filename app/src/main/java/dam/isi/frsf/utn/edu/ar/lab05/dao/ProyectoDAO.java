@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
@@ -72,9 +73,11 @@ public class ProyectoDAO {
         cursor = db.rawQuery(_SQL_TAREAS_X_PROYECTO,new String[]{idPry.toString()});
         return cursor;
     }
-
+    /*
+        TODO Implementar input de tarea
+     */
     public void nuevaTarea(Tarea t){
-
+        System.out.println("Guardo una tarea");
     }
 
     public void actualizarTarea(Tarea t){
@@ -89,7 +92,7 @@ public class ProyectoDAO {
         return null;
     }
 
-    // TODO DE ACA TOMAR LOS Usuarios
+
     public List<Usuario> listarUsuarios(){
         Usuario nuevoUsuario;
         listaUsuarios = new ArrayList<>();
@@ -130,6 +133,34 @@ public class ProyectoDAO {
         // que el tiempo planificado.
         // si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
         return null;
+    }
+
+    /**
+     * Retorna el proyecto con id idProyecto
+     * @param idProyecto
+     * @return
+     */
+    public Proyecto getProyecto(int idProyecto)
+    {
+        Proyecto nuevoProyecto = new Proyecto();
+        try
+        {
+            open(false);
+            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID +","+ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
+            result.moveToFirst();
+            nuevoProyecto.setId(result.getInt(0));
+            nuevoProyecto.setNombre(result.getString(0));
+            result.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exploto la bd al abrirla");
+
+        }
+        finally
+        {
+            return nuevoProyecto;
+        }
     }
 
 

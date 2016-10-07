@@ -16,7 +16,16 @@ public class Tarea {
 
     public Tarea() {
     }
-
+    public Tarea(Boolean terminada, Integer horasEstimadas, Integer minutosTrabajados, Boolean finalizada, Proyecto proyecto, Prioridad prioridad, Usuario responsable) {
+        this.id = id;
+        this.terminada = terminada;
+        this.horasEstimadas = horasEstimadas;
+        this.minutosTrabajados = minutosTrabajados;
+        this.finalizada = finalizada;
+        this.proyecto = proyecto;
+        this.prioridad = prioridad;
+        this.responsable = responsable;
+    }
     public Tarea(Integer id, Boolean terminada, Integer horasEstimadas, Integer minutosTrabajados, Boolean finalizada, Proyecto proyecto, Prioridad prioridad, Usuario responsable) {
         this.id = id;
         this.terminada = terminada;
