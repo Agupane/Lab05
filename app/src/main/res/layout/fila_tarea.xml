@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:text="Responsable:"
+            android:text="@string/responsable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tareaVerResponsable"
@@ -27,7 +27,7 @@
             android:layout_weight="1.0"/>
 
         <TextView
-            android:text="Prioridad: "
+            android:text="@string/prioridad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tareaVerPrioridad"
@@ -46,7 +46,7 @@
 
         <TextView
             android:id="@+id/tareaVerMinutosAsignados"
-            android:text="Min Asignados: "
+            android:text="@string/min_asignados"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
@@ -61,7 +61,7 @@
 
         <TextView
             android:id="@+id/tareaVerMinutosTrabajados"
-            android:text="Min trabajados:"
+            android:text="@string/min_trabajados"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
@@ -85,38 +85,43 @@
             android:layout_height="wrap_content"
             android:clickable="false"
             android:focusable="false"
-            android:text="Finalizada"/>
+            android:text="@string/finalizada"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <ToggleButton
             android:id="@+id/tareaBtnTrabajando"
-            android:textOn="Trabajando"
-            android:textOff="Trabajar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"/>
-        <Button
-            android:id="@+id/tareaBtnEditarDatos"
-            android:text="Editar"
+            android:textOn="@string/trabajando"
+            android:textOff="@string/trabajar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             />
         <Button
-            android:id="@+id/tareaBtnFinalizada"
-            android:text="Finalizar"
+            android:id="@+id/tareaBtnEditarDatos"
+            android:text="@string/editar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"/>
+            android:layout_weight="1.0"
+
+            />
+        <Button
+            android:id="@+id/tareaBtnFinalizada"
+            android:text="@string/finalizar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            />
 
         <Button
-            android:text="Eliminar"
+            android:text="@string/eliminar"
             android:id="@+id/tareaBtnEliminar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"/>
+            android:layout_weight="1.0"
+            />
     </LinearLayout>
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
         proyectoDAO.nuevaTarea(nuevaTarea);
         setResult(RESULT_OK);
+        Toast.makeText(getApplicationContext(),"La operacion de alta se realizo exitosamente",Toast.LENGTH_LONG);
     }
     private void accionBotonCancelar()
     {

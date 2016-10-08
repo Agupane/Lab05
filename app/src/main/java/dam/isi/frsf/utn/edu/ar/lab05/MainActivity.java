@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
@@ -102,10 +103,16 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch(id)
+        {
+            case R.id.action_settings: return true;
 
+            case R.id.action_buscar_tareas:{
+                Intent intActBuscar= new Intent(MainActivity.this,BuscarTareasActivity.class);
+                startActivity(intActBuscar);
+                break;
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 

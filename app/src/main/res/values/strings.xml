@@ -1,4 +1,25 @@
 <resources>
-    <string name="app_name">Laboratorio05</string>
+    <string name="app_name">Gestor de tareas agiles</string>
     <string name="action_settings">Settings</string>
+    <string name="action_buscar_tareas">Buscar tareas</string>
+    <string name="buscar">Buscar</string>
+    <string name="listas_de_tareas">Listas de tareas:</string>
+    <string name="minutos_de_desvio">Minutos de desvio:</string>
+    <string name="seleccione_los_criterios_de_busqueda">Seleccione los criterios de busqueda:</string>
+    <string name="textoSwitch">Tarea terminada ?</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="datos_de_la_tarea">Datos de la tarea</string>
+    <string name="descripcion">Descripcion</string>
+    <string name="guardar">Guardar</string>
+    <string name="prioridad">Prioridad: </string>
+    <string name="responsable">Responsable: </string>
+    <string name="horas_estimadas">Horas Estimadas</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="finalizada">Finalizada</string>
+    <string name="finalizar">Finalizar</string>
+    <string name="min_asignados">Min Asignados:</string>
+    <string name="min_trabajados">Min trabajados:</string>
+    <string name="trabajando">Trabajando</string>
+    <string name="trabajar">Trabajar</string>
 </resources>

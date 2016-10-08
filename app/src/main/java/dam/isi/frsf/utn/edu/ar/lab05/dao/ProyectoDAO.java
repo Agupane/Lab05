@@ -167,7 +167,71 @@ public class ProyectoDAO {
         // retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto)
         // que el tiempo planificado.
         // si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
-        return null;
+        Cursor resultadoTareas;
+        List<Tarea> listaTareasDesviadas = new ArrayList<>();
+        Tarea nuevaTarea;
+        if(soloTerminadas)
+        {
+            resultadoTareas= db.rawQuery("SELECT * FROM "+ProyectoDBMetadata.TABLA_TAREAS+" WHERE "+ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA +" = "+1,null);
+        }
+        else
+        {
+            resultadoTareas= db.rawQuery("SELECT * FROM "+ProyectoDBMetadata.TABLA_TAREAS,null);
+        }
+        while (resultadoTareas.moveToNext())
+        {
+            // Primer parameto el id, segundo el nombre y tercero el email
+            Integer idTarea = resultadoTareas.getInt(0);
+            String descripcion = resultadoTareas.getString(1);
+            Integer horasEstimadas = resultadoTareas.getInt(2);
+            Integer minutosTrabajados = resultadoTareas.getInt(3);
+            Prioridad prioridad = getPrioridad(resultadoTareas.getInt(4));
+            Usuario responsable = getUsuario(resultadoTareas.getInt(5));
+            Proyecto proyecto = getProyecto(resultadoTareas.getInt(6));
+            Boolean finalizada = soloTerminadas;
+            nuevaTarea = new Tarea(idTarea,finalizada,horasEstimadas,minutosTrabajados,proyecto,prioridad,responsable,descripcion);
+            listaTareasDesviadas.add(nuevaTarea);
+        }
+        return listaTareasDesviadas;
+    }
+    public Prioridad getPrioridad (Integer idPrioridad) {
+        Prioridad prioridad = new Prioridad();
+        try {
+            open(false);
+            Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD + " FROM " + ProyectoDBMetadata.TABLA_PRIORIDAD + " WHERE " + ProyectoDBMetadata.TablaPrioridadMetadata._ID+" = " + idPrioridad, null);
+            result.moveToFirst();
+            prioridad.setId(idPrioridad);
+            prioridad.setPrioridad((result.getString(0)));
+            result.close();
+
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Error al buscar una prioridad");
+        }
+        finally {
+            return prioridad;
+        }
+    }
+    public Usuario getUsuario(Integer idUsuario){
+        Usuario usuario = new Usuario();
+        try {
+            open(false);
+            Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO +" , "+ ProyectoDBMetadata.TablaUsuariosMetadata.MAIL + " FROM " + ProyectoDBMetadata.TABLA_USUARIOS+ " WHERE " + ProyectoDBMetadata.TablaUsuariosMetadata._ID+" = " + idUsuario, null);
+            result.moveToFirst();
+            usuario.setId(idUsuario);
+            usuario.setNombre(result.getString(0));
+            usuario.setCorreoElectronico(result.getString(1));
+            result.close();
+
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Error al buscar un usuario");
+        }
+        finally {
+            return usuario;
+        }
     }
 
     /**
@@ -181,9 +245,9 @@ public class ProyectoDAO {
         try
         {
             open(false);
-            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID +","+ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
+            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM "+ProyectoDBMetadata.TABLA_PROYECTO+" WHERE "+ProyectoDBMetadata.TablaProyectoMetadata._ID+" = "+idProyecto,null);
             result.moveToFirst();
-            nuevoProyecto.setId(result.getInt(0));
+            nuevoProyecto.setId(idProyecto);
             nuevoProyecto.setNombre(result.getString(0));
             result.close();
         }

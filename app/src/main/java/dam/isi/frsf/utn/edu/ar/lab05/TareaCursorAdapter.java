@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.concurrent.TimeUnit;
@@ -129,6 +130,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         {
             tArranqueTrabajo= System.currentTimeMillis();
             btnEstado.setChecked(true);
+            Toast.makeText(contexto,"Ahora estas trabajando",Toast.LENGTH_SHORT);
         }
         else
         {
@@ -143,6 +145,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             tFinalTrabajo = null;
             btnEstado.setChecked(false);
             changeCursor();
+            Toast.makeText(contexto,"Dejaste de trabajar",Toast.LENGTH_SHORT);
         }
     }
 
@@ -155,6 +158,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         Intent intEditarAct = new Intent(contexto,AltaTareaActivity.class);
         intEditarAct.putExtra("ID_TAREA",idTarea);
         contexto.startActivity(intEditarAct);
+        Toast.makeText(contexto,"La operacion de edicion se realizo exitosamente",Toast.LENGTH_LONG);
     }
 
     /**
@@ -172,6 +176,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             }
         });
         backGroundUpdate.start();
+        Toast.makeText(contexto,"La tarea se marco como finalizada",Toast.LENGTH_SHORT);
     }
 
     /**
@@ -198,6 +203,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         final Integer idTarea= (Integer) v.getTag();
         myDao.borrarTarea(idTarea);
         handlerRefresh.sendEmptyMessage(1);
+        Toast.makeText(contexto,"La tarea se elimino exitosamente",Toast.LENGTH_LONG);
     }
 
 }
