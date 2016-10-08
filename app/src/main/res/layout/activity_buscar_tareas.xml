@@ -19,25 +19,25 @@
         android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="100dp"
+        android:paddingTop="20dp">
 
         <TextView
             android:text="@string/minutos_de_desvio"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tvVerMinDesviados"
-            android:layout_weight="1" />
+            android:layout_width="match_parent"
+            android:textAlignment="center"/>
 
-        <EditText
+        <NumberPicker
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:ems="10"
             android:id="@+id/etMinDesviados"
-            android:layout_weight="1" />
+             />
+
     </LinearLayout>
 
     <LinearLayout
@@ -60,7 +60,6 @@
             android:id="@+id/bBuscar"
             android:background="?android:attr/selectableItemBackground"/>
     </LinearLayout>
-
 
 
 </LinearLayout>

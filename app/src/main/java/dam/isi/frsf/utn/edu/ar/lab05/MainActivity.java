@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private ProyectoDAO proyectoDAO;
     private Cursor cursor;
     private TareaCursorAdapter tca;
+    public static final int RESULT_BACK = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intActAlta= new Intent(MainActivity.this,AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
-                startActivityForResult(intActAlta,1);
+                startActivityForResult(intActAlta,0);
             }
         });
         lvTareas = (ListView) findViewById(R.id.listaTareas);
@@ -48,19 +49,52 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode,int resultCode,Intent data)
     {
-        switch(resultCode)
+        switch(requestCode)
         {
-            case RESULT_OK:
+
+            case 0: // Alta actividad
             {
-                this.tca.changeCursor();
-                break;
+                switch(resultCode)
+                {
+                    case RESULT_OK:
+                    {
+                        this.tca.changeCursor();
+                        Toast.makeText(getApplicationContext(),"La operacion de alta se realizo exitosamente",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case RESULT_CANCELED:
+                    {
+                        Toast.makeText(getApplicationContext(),"La operacion de alta no se pudo llevar a cabo, intente mas tarde",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case RESULT_BACK:
+                    {
+                        break;
+                    }
+                    default: {break;}
+                }
             }
-            case RESULT_CANCELED:
+            case 1: // Editar actividad
             {
-                break;
+                switch(resultCode)
+                {
+                    case RESULT_OK:
+                    {
+                        this.tca.changeCursor();
+                        Toast.makeText(getApplicationContext(),"La operacion de edicion se realizo exitosamente",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case RESULT_CANCELED:
+                    {
+                        Toast.makeText(getApplicationContext(),"La operacion de edicion no se pudo llevar a cabo, intente mas tarde",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    default: {break;}
+                }
             }
             default: {break;}
         }
+
     }
     @Override
     protected void onResume() {

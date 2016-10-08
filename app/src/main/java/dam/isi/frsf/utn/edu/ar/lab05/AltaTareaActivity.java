@@ -1,5 +1,6 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.database.CursorJoiner;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,31 +26,68 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     private List<Usuario> listaUsuarios;
     private ProyectoDAO proyectoDAO;
     private SeekBar sbPrioridad;
-    private Integer horasEstimadas;
+    private Integer horasEstimadas,intPrioridad;
     private Prioridad prioridad;
     private EditText etDescripcionTarea,etHorasEstimadas;
     private String descripcionTarea;
     private Button btnGuardar,btnCancelar;
-    private Tarea nuevaTarea;
+    private Tarea nuevaTarea,tareaAEditar;
     private Usuario usuarioSeleccionado;
     private Proyecto proyectoSeleccionado;
+    private Integer idTareaAEditar;
+    private boolean edicion;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
         cargarComponentes();
         listaUsuarios=proyectoDAO.listarUsuarios();
+        edicion = false;
 
+
+        if( (getIntent().getIntExtra("RESULT_CODE",2)) == 1) // Significa que soy una activity de editar
+        {
+            idTareaAEditar = (getIntent().getIntExtra("ID_TAREA",1));
+            tareaAEditar = proyectoDAO.getTarea(idTareaAEditar);
+            if(tareaAEditar !=null) {
+                edicion=true;
+                etDescripcionTarea.setText(tareaAEditar.getDescripcion());
+                etHorasEstimadas.setText(Integer.toString( tareaAEditar.getHorasEstimadas() ));
+                sbPrioridad.setProgress(Integer.valueOf(tareaAEditar.getPrioridad().getPrioridad()));
+                swapListas();
+
+
+            }
+        }
         adapterListaUsuarios = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,listaUsuarios);
         adapterListaUsuarios.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerListaUsuarios.setAdapter(adapterListaUsuarios);
 
         sbPrioridad.setOnSeekBarChangeListener(this);
         sbPrioridad.setMax(3);
+        intPrioridad = (sbPrioridad.getProgress() + 1);
+
         btnCancelar.setOnClickListener(this);
         btnGuardar.setOnClickListener(this);
     }
 
+    /**
+     * // TODO Consultar y editar esto de como se ve la lista de edicion Hacerlo bien, esto esta hardcodeado asi nomas
+     *
+     * Pone al usuario dueño de la tarea al inicio de la fila
+     */
+    private void swapListas()
+    {
+        Usuario duenio = tareaAEditar.getResponsable();
+        String usuarioDuenio = duenio.getNombre();
+        if(usuarioDuenio.equals("lucas"))
+        {
+            listaUsuarios.remove(1);
+            listaUsuarios.add(0,duenio);
+           // listaUsuarios.set(0,duenio);
+        }
+
+    }
     /**
      * Inicializa todas las variables
      */
@@ -81,8 +119,8 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     public void onStopTrackingTouch(SeekBar seekBar) {
 
         int intPrioridad = seekBar.getProgress();
-        intPrioridad++;
-        prioridad.setPrioridad(Integer.toString(intPrioridad));  // Como la prioridad es de 1 a 4 y el seekbar de 0 a 3, lo aumento en 1
+        intPrioridad++; // Como la prioridad es de 1 a 4 y el seekbar de 0 a 3, lo aumento en 1
+        this.intPrioridad = intPrioridad;
     }
 
     @Override
@@ -107,17 +145,49 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     }
     private void accionBotonGuardar()
     {
-        horasEstimadas = Integer.getInteger( String.valueOf(etHorasEstimadas.getText()) );
-        descripcionTarea = String.valueOf(etDescripcionTarea.getText());
-        usuarioSeleccionado = (Usuario) spinnerListaUsuarios.getSelectedItem();
-        proyectoSeleccionado = (Proyecto) proyectoDAO.getProyecto(0);
-        nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
-        proyectoDAO.nuevaTarea(nuevaTarea);
-        setResult(RESULT_OK);
-        Toast.makeText(getApplicationContext(),"La operacion de alta se realizo exitosamente",Toast.LENGTH_LONG);
+        try {
+            horasEstimadas = Integer.parseInt(String.valueOf(etHorasEstimadas.getText()));
+            descripcionTarea = String.valueOf(etDescripcionTarea.getText());
+            usuarioSeleccionado = (Usuario) spinnerListaUsuarios.getSelectedItem();
+            proyectoSeleccionado = proyectoDAO.getProyecto(1);
+            prioridad = proyectoDAO.getPrioridad(intPrioridad);
+        }
+        catch(Exception e)
+        {
+            setResult(RESULT_CANCELED);
+        }
+         if(!descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
+          {
+              nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
+              if(edicion) // Si estoy editando una tarea
+              {
+                  nuevaTarea.setId(idTareaAEditar);
+                  proyectoDAO.actualizarTarea(nuevaTarea);
+              }
+              else // Estoy dando de alta una tarea
+              {
+                  proyectoDAO.nuevaTarea(nuevaTarea);
+
+              }
+                setResult(RESULT_OK);
+          }
+          else
+          {
+              Toast.makeText(this.getBaseContext(),"Por favor, complete todos los datos.",Toast.LENGTH_LONG).show();
+          }
+
+
+        finish();
     }
     private void accionBotonCancelar()
     {
-        setResult(RESULT_CANCELED);
+        setResult(3);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(3);
+        super.onBackPressed();
     }
 }

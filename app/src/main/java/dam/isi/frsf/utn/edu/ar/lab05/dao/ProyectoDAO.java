@@ -86,22 +86,71 @@ public class ProyectoDAO {
         open(true);
         try {
             db.insert(ProyectoDBMetadata.TABLA_TAREAS,null,datosAGuardar);
-            System.out.println("Guardo una tarea");
         }
         catch(Exception e)
         {
             System.out.println(e.getMessage());
-            System.out.println("BD Exploto en el insert");
+            System.out.println("BD Exploto en el insert de tarea");
         }
     }
-
     public void actualizarTarea(Tarea t){
-
+        ContentValues datosAGuardar = new ContentValues();
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS,t.getHorasEstimadas());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,0);
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA,t.getDescripcion());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD,t.getPrioridad().getId());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE,t.getResponsable().getId());
+        datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata. PROYECTO,t.getProyecto().getId());
+        open(true);
+        try {
+            db.update(ProyectoDBMetadata.TABLA_TAREAS,datosAGuardar,ProyectoDBMetadata.TablaTareasMetadata._ID+"="+t.getId(),null);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("BD Exploto al actualizar tarea");
+        }
     }
 
     public void borrarTarea(Tarea t){
 
     }
+    public Tarea getTarea(int idTarea)
+    {
+        Tarea nuevaTarea = null;
+        Cursor resultadoTareas;
+        try
+        {
+            open(false);
+            resultadoTareas = db.rawQuery("SELECT * " + " FROM "+ProyectoDBMetadata.TABLA_TAREAS+" WHERE "+ProyectoDBMetadata.TablaTareasMetadata._ID+" = "+idTarea,null);
+            resultadoTareas.moveToFirst();
+
+            String descripcion = resultadoTareas.getString(1);
+            Integer horasEstimadas = resultadoTareas.getInt(2);
+            Integer minutosTrabajados = resultadoTareas.getInt(3);
+            Prioridad prioridad = getPrioridad(resultadoTareas.getInt(4));
+            Usuario responsable = getUsuario(resultadoTareas.getInt(5));
+            Proyecto proyecto = getProyecto(resultadoTareas.getInt(6));
+            Boolean finalizada;
+            if(resultadoTareas.getInt(7) == 0 )
+            {
+                finalizada=false;
+            }
+            else {
+                finalizada = true;
+            }
+            nuevaTarea = new Tarea(idTarea,finalizada,horasEstimadas,minutosTrabajados,proyecto,prioridad,responsable,descripcion);
+            resultadoTareas.close();
+        }
+        catch(Exception e)
+        {
+
+            System.out.println("Exploto la bd al buscar una tarea");
+
+        }
+        return nuevaTarea;
+    }
+
 
     /**
      * Borra tarea por id
@@ -127,7 +176,25 @@ public class ProyectoDAO {
         return null;
     }
 
+    public Prioridad getPrioridad (Integer idPrioridad) {
+        Prioridad prioridad = new Prioridad();
+        try {
+            open(false);
+            Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaPrioridadMetadata._ID + " , "+ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD+" FROM " + ProyectoDBMetadata.TABLA_PRIORIDAD + " WHERE " + ProyectoDBMetadata.TablaPrioridadMetadata._ID+" = " + idPrioridad, null);
+            result.moveToFirst();
+            prioridad.setId(idPrioridad);
+            prioridad.setPrioridad((result.getString(0)));
+            result.close();
 
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Error al buscar una prioridad");
+        }
+        finally {
+            return prioridad;
+        }
+    }
     public List<Usuario> listarUsuarios(){
         Usuario nuevoUsuario;
         listaUsuarios = new ArrayList<>();
@@ -145,7 +212,7 @@ public class ProyectoDAO {
         }
         catch(Exception e)
         {
-            System.out.println("Exploto la bd al abrirla");
+            System.out.println("Exploto la bd al listar usuarios");
         }
         finally
         {
@@ -163,7 +230,7 @@ public class ProyectoDAO {
        // mydb.close();
     }
 
-    public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMaximoMinutos){
+    public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMinimo){
         // retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto)
         // que el tiempo planificado.
         // si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
@@ -200,12 +267,11 @@ public class ProyectoDAO {
                 nuevaTarea = new Tarea(idTarea,finalizada,horasEstimadas,minutosTrabajados,proyecto,prioridad,responsable,descripcion);
                 listaTareasDesviadas.add(nuevaTarea);
             }
-            listaTareasDesviadas = filtrarTareas(listaTareasDesviadas,desvioMaximoMinutos); // Selecciona solo las que tengan el mayor desvio, despues hay que cambiar esto pq es horrible
+            listaTareasDesviadas = filtrarTareas(listaTareasDesviadas,desvioMinimo); // Selecciona solo las que tengan el mayor desvio, despues hay que cambiar esto pq es horrible
         }
         catch(Exception e)
         {
-            e.printStackTrace();
-            //System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
             System.out.println("Bd exploto al internet buscar desvios");
         }
         finally
@@ -218,32 +284,26 @@ public class ProyectoDAO {
      * TODO Implementar la consulta bien y borrar esto, es solo temporal
      * Filtra las tareas segun el numero de desvio, METODO A BORRAR
      * @param listaTareas
-     * @param desvio
+     *
      * @return
      */
-    private List<Tarea> filtrarTareas(List<Tarea> listaTareas,Integer desvio)
+    private List<Tarea> filtrarTareas(List<Tarea> listaTareas,Integer desvioMin)
     {
-        return listaTareas;
+        List<Tarea> listaFiltrada = new ArrayList<>();
+        Integer minutosTrabajados;
+        Integer minutosPlanificados;
+        for(Tarea iteradora:listaTareas)
+        {
+             minutosTrabajados= iteradora.getMinutosTrabajados();
+             minutosPlanificados= iteradora.getHorasEstimadas();
+            if( (Math.abs(minutosPlanificados - minutosTrabajados) >desvioMin) || (Math.abs(minutosTrabajados - minutosPlanificados) >desvioMin))
+            {
+                listaFiltrada.add(iteradora);
+            }
+        }
+        return listaFiltrada;
     }
-    public Prioridad getPrioridad (Integer idPrioridad) {
-        Prioridad prioridad = new Prioridad();
-        try {
-            open(false);
-            Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD + " FROM " + ProyectoDBMetadata.TABLA_PRIORIDAD + " WHERE " + ProyectoDBMetadata.TablaPrioridadMetadata._ID+" = " + idPrioridad, null);
-            result.moveToFirst();
-            prioridad.setId(idPrioridad);
-            prioridad.setPrioridad((result.getString(0)));
-            result.close();
 
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("Error al buscar una prioridad");
-        }
-        finally {
-            return prioridad;
-        }
-    }
     public Usuario getUsuario(Integer idUsuario){
         Usuario usuario = new Usuario();
         try {
@@ -272,25 +332,24 @@ public class ProyectoDAO {
      */
     public Proyecto getProyecto(int idProyecto)
     {
-        Proyecto nuevoProyecto = new Proyecto();
+        Proyecto nuevoProyecto = null;
         try
         {
             open(false);
             Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM "+ProyectoDBMetadata.TABLA_PROYECTO+" WHERE "+ProyectoDBMetadata.TablaProyectoMetadata._ID+" = "+idProyecto,null);
             result.moveToFirst();
+            nuevoProyecto = new Proyecto();
             nuevoProyecto.setId(idProyecto);
             nuevoProyecto.setNombre(result.getString(0));
             result.close();
         }
         catch(Exception e)
         {
-            System.out.println("Exploto la bd al abrirla");
+            System.out.println(e.getMessage());
+            System.out.println("Exploto la bd al buscar un proyecto");
 
         }
-        finally
-        {
-            return nuevoProyecto;
-        }
+        return nuevoProyecto;
     }
     public void ActualizarMinutosTrabajados(Integer idTarea, int minutosTrabajados)
     {

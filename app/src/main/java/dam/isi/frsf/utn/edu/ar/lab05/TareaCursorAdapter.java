@@ -1,5 +1,6 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -130,7 +131,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         {
             tArranqueTrabajo= System.currentTimeMillis();
             btnEstado.setChecked(true);
-            Toast.makeText(contexto,"Ahora estas trabajando",Toast.LENGTH_SHORT);
+            Toast.makeText(contexto,"Ahora estas trabajando",Toast.LENGTH_SHORT).show();
         }
         else
         {
@@ -145,7 +146,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             tFinalTrabajo = null;
             btnEstado.setChecked(false);
             changeCursor();
-            Toast.makeText(contexto,"Dejaste de trabajar",Toast.LENGTH_SHORT);
+            Toast.makeText(contexto,"Dejaste de trabajar",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -157,8 +158,9 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         final Integer idTarea= (Integer) view.getTag();
         Intent intEditarAct = new Intent(contexto,AltaTareaActivity.class);
         intEditarAct.putExtra("ID_TAREA",idTarea);
-        contexto.startActivity(intEditarAct);
-        Toast.makeText(contexto,"La operacion de edicion se realizo exitosamente",Toast.LENGTH_LONG);
+        intEditarAct.putExtra("RESULT_CODE",1);
+        ((Activity) contexto).startActivityForResult(intEditarAct,1);
+
     }
 
     /**
@@ -176,7 +178,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             }
         });
         backGroundUpdate.start();
-        Toast.makeText(contexto,"La tarea se marco como finalizada",Toast.LENGTH_SHORT);
+        Toast.makeText(contexto,"La tarea se marco como finalizada",Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -203,7 +205,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         final Integer idTarea= (Integer) v.getTag();
         myDao.borrarTarea(idTarea);
         handlerRefresh.sendEmptyMessage(1);
-        Toast.makeText(contexto,"La tarea se elimino exitosamente",Toast.LENGTH_LONG);
+        Toast.makeText(contexto,"La tarea se elimino exitosamente",Toast.LENGTH_LONG).show();
     }
 
 }

@@ -4,7 +4,7 @@
     <string name="action_buscar_tareas">Buscar tareas</string>
     <string name="buscar">Buscar</string>
     <string name="listas_de_tareas">Listas de tareas:</string>
-    <string name="minutos_de_desvio">Minutos de desvio:</string>
+    <string name="minutos_de_desvio">Minutos de desvio minimo:</string>
     <string name="seleccione_los_criterios_de_busqueda">Seleccione los criterios de busqueda:</string>
     <string name="textoSwitch">Tarea terminada ?</string>
     <string name="cancelar">Cancelar</string>
@@ -18,7 +18,7 @@
     <string name="eliminar">Eliminar</string>
     <string name="finalizada">Finalizada</string>
     <string name="finalizar">Finalizar</string>
-    <string name="min_asignados">Min Asignados:</string>
+    <string name="min_asignados">Min Planificados:</string>
     <string name="min_trabajados">Min trabajados:</string>
     <string name="trabajando">Trabajando</string>
     <string name="trabajar">Trabajar</string>
