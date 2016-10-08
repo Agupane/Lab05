@@ -112,9 +112,10 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         proyectoSeleccionado = (Proyecto) proyectoDAO.getProyecto(0);
         nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
         proyectoDAO.nuevaTarea(nuevaTarea);
+        setResult(RESULT_OK);
     }
     private void accionBotonCancelar()
     {
-
+        setResult(RESULT_CANCELED);
     }
 }

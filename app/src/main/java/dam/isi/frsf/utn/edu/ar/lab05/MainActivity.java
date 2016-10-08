@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ProyectoDAO proyectoDAO;
     private Cursor cursor;
     private TareaCursorAdapter tca;
+    private Integer resultCode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +39,29 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intActAlta= new Intent(MainActivity.this,AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
-                startActivity(intActAlta);
+                startActivityForResult(intActAlta,resultCode);
             }
         });
         lvTareas = (ListView) findViewById(R.id.listaTareas);
         lvTareas.setClickable(true);
     }
 
+    protected void onActivityResult(int requestCode,int resultCode,Intent data)
+    {
+        switch(resultCode)
+        {
+            case RESULT_OK:
+            {
+                this.tca.changeCursor();
+                break;
+            }
+            case RESULT_CANCELED:
+            {
+                break;
+            }
+            default: {break;}
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -91,11 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public void changeCursor()
-    {
-        System.out.println("Cambiando cursor");
-        tca = new TareaCursorAdapter(MainActivity.this,cursor,proyectoDAO);
-        lvTareas.setAdapter(tca);
-    }
+
 
 }

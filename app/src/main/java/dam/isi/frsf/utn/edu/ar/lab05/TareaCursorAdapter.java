@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -140,6 +142,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
 
     /**
      * Accion que se ejecuta cuando se presiona el boton editar datos
+     * TODO Terminar de armar el editar y devolver un resultado
      */
     private void accionBotonEditarDatos(View view) {
         final Integer idTarea= (Integer) view.getTag();
@@ -158,19 +161,37 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             public void run() {
                 Log.d("LAB05-MAIN","finalizar tarea : --- "+idTarea);
                 myDao.finalizar(idTarea);
+                changeCursor(); // Con este mensaje se actualiza el cursor
+
             }
         });
         backGroundUpdate.start();
     }
 
     /**
+     * Actualiza el cursor (renueva la lista)
+     */
+    public void changeCursor()
+    {
+        handlerRefresh.sendEmptyMessage(1);
+    }
+
+    /**
+     * Handler que permite actualizar el cursor
+     */
+    Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message inputMessage) {
+            TareaCursorAdapter.this.changeCursor(myDao.listaTareas(1));
+        }
+    };
+    /**
      * Accion que se ejecuta cuando se presiona el boton eliminar
      */
     private void accionBotonEliminar(View v){
         final Integer idTarea= (Integer) v.getTag();
         myDao.borrarTarea(idTarea);
-        ((MainActivity) contexto).changeCursor();
-        System.out.println("Eliminando tarea");
+        handlerRefresh.sendEmptyMessage(1);
     }
 
 }

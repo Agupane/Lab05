@@ -93,10 +93,6 @@ public class ProyectoDAO {
             System.out.println(e.getMessage());
             System.out.println("BD Exploto en el insert");
         }
-        finally
-        {
-            close();
-        }
     }
 
     public void actualizarTarea(Tarea t){
@@ -164,7 +160,7 @@ public class ProyectoDAO {
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA,1);
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
         mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
-        mydb.close();
+       // mydb.close();
     }
 
     public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMaximoMinutos){
@@ -216,10 +212,6 @@ public class ProyectoDAO {
         {
             System.out.println(e.getMessage());
             System.out.println("Exploto la bd al actualizar los minutos");
-        }
-        finally
-        {
-            db.close();
         }
     }
 
