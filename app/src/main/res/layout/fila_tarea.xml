@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
@@ -10,54 +11,112 @@
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Responsable:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tareaVerResponsable"
+            android:layout_weight="1.0"
+            tools:id="@id/tareaVerResponsable" />
+
         <TextView
             android:id="@+id/tareaResponsable"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"/>
+
+        <TextView
+            android:text="Prioridad: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tareaVerPrioridad"
+            android:layout_weight="1.0"
+            tools:id="@id/tareaVerPrioridad" />
+
         <TextView
             android:id="@+id/tareaPrioridad"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"/>
     </LinearLayout>
     <LinearLayout android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
+
+        <TextView
+            android:id="@+id/tareaVerMinutosAsignados"
+            android:text="Min Asignados: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+        />
+
         <TextView
             android:id="@+id/tareaMinutosAsignados"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+        />
+
+        <TextView
+            android:id="@+id/tareaVerMinutosTrabajados"
+            android:text="Min trabajados:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+
+            />
+
         <TextView
             android:id="@+id/tareaMinutosTrabajados"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <CheckBox
-            android:id="@+id/tareaFinalizada"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"/>
+            android:maxLines="1" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/tareaFinalizada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="Finalizada"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <ToggleButton
             android:id="@+id/tareaBtnTrabajando"
-            android:textOn="trabajando...."
-            android:textOff="trabajar..."
+            android:textOn="Trabajando"
+            android:textOff="Trabajar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"/>
         <Button
             android:id="@+id/tareaBtnEditarDatos"
             android:text="Editar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1.0"
             />
         <Button
             android:id="@+id/tareaBtnFinalizada"
-            android:text="Finalizar!"
+            android:text="Finalizar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_weight="1.0"/>
+
+        <Button
+            android:text="Eliminar"
+            android:id="@+id/tareaBtnEliminar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"/>
     </LinearLayout>
 </LinearLayout>

@@ -39,6 +39,7 @@ public class ProyectoOpenHelper extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         //db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
+
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);

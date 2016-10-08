@@ -73,9 +73,7 @@ public class ProyectoDAO {
         cursor = db.rawQuery(_SQL_TAREAS_X_PROYECTO,new String[]{idPry.toString()});
         return cursor;
     }
-    /*
-        TODO Implementar input de tarea
-     */
+
     public void nuevaTarea(Tarea t)
     {
         ContentValues datosAGuardar = new ContentValues();
@@ -106,6 +104,26 @@ public class ProyectoDAO {
     }
 
     public void borrarTarea(Tarea t){
+
+    }
+
+    /**
+     * Borra tarea por id
+     * @param idTarea
+     */
+    public void borrarTarea(int idTarea)
+    {
+        String[] args = { String.valueOf(idTarea) };
+        try
+        {
+            open(true);
+            db.delete(ProyectoDBMetadata.TABLA_TAREAS,"_id=?", args);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Bd exploto al eliminar tarea");
+        }
 
     }
 

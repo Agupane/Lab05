@@ -30,7 +30,8 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     private Context contexto;
     private ToggleButton btnEstado;
     private Long tArranqueTrabajo,tFinalTrabajo,tiempoTrabajado;
-    private int minutosTrabajados;
+    private Button btnEliminar;
+    private Integer minutosTrabajados;
     public TareaCursorAdapter (Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
         myDao= dao;
@@ -49,7 +50,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     public void bindView(View view, final Context context, final Cursor cursor) {
         //obtener la posicion de la fila actual y asignarla a los botones y checkboxes
         int pos = cursor.getPosition();
-
+        this.contexto=context;
         // Referencias UI.
         TextView nombre= (TextView) view.findViewById(R.id.tareaTitulo);
         TextView tiempoAsignado= (TextView) view.findViewById(R.id.tareaMinutosAsignados);
@@ -60,52 +61,64 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
 
         final Button btnFinalizar = (Button)   view.findViewById(R.id.tareaBtnFinalizada);
         final Button btnEditar = (Button)   view.findViewById(R.id.tareaBtnEditarDatos);
+        btnEliminar = (Button) view.findViewById(R.id.tareaBtnEliminar);
         btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
         btnEstado.setOnClickListener(this);
         nombre.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
-        tiempoAsignado.setText(horasAsigandas*60 + " minutos");
+        tiempoAsignado.setText(Integer.toString(horasAsigandas*60)+" ");
 
-        Integer minutosAsigandos = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
-        tiempoTrabajado.setText(minutosAsigandos+ " minutos");
+        Integer minutosAsignados = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
+        tiempoTrabajado.setText(" "+minutosAsignados);
         String p = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD_ALIAS));
         prioridad.setText(p);
         responsable.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO_ALIAS)));
         finalizada.setChecked(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA))==1);
         finalizada.setTextIsSelectable(false);
 
-        btnEditar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Integer idTarea= (Integer) view.getTag();
-                Intent intEditarAct = new Intent(contexto,AltaTareaActivity.class);
-                intEditarAct.putExtra("ID_TAREA",idTarea);
-                context.startActivity(intEditarAct);
+        btnEliminar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+        btnEliminar.setOnClickListener(this);
 
-            }
-        });
+        btnEditar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+        btnEditar.setOnClickListener(this);
 
         btnFinalizar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
-        btnFinalizar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Integer idTarea= (Integer) view.getTag();
-                Thread backGroundUpdate = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("LAB05-MAIN","finalizar tarea : --- "+idTarea);
-                        myDao.finalizar(idTarea);
-                    }
-                });
-                backGroundUpdate.start();
-            }
-        });
+        btnFinalizar.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v)
     {
+        switch(v.getId())
+        {
+            case R.id.tareaBtnTrabajando:
+            {
+                accionBotonTrabajar();
+                break;
+            }
+            case R.id.tareaBtnEditarDatos:
+            {
+                accionBotonEditarDatos(v);
+                break;
+            }
+            case R.id.tareaBtnFinalizada:
+            {
+                accionBotonFinalizada(v);
+                break;
+            }
+            case R.id.tareaBtnEliminar:
+            {
+                accionBotonEliminar(v);
+                break;
+            }
+        }
+
+    }
+
+    /**
+     * Accion que se ejecuta cuando se presiona el boton de trabajar
+     */
+    private void accionBotonTrabajar() {
         if(!btnEstado.isChecked())
         {
             tArranqueTrabajo= System.currentTimeMillis();
@@ -117,6 +130,41 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
             guardarTiempoEnBd();
         }
+    }
+
+    /**
+     * Accion que se ejecuta cuando se presiona el boton editar datos
+     */
+    private void accionBotonEditarDatos(View view) {
+        final Integer idTarea= (Integer) view.getTag();
+        Intent intEditarAct = new Intent(contexto,AltaTareaActivity.class);
+        intEditarAct.putExtra("ID_TAREA",idTarea);
+        contexto.startActivity(intEditarAct);
+    }
+
+    /**
+     * Accion que se ejecuta cuando se presiona el boton finalizada
+     */
+    private void accionBotonFinalizada(View view){
+        final Integer idTarea= (Integer) view.getTag();
+        Thread backGroundUpdate = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("LAB05-MAIN","finalizar tarea : --- "+idTarea);
+                myDao.finalizar(idTarea);
+            }
+        });
+        backGroundUpdate.start();
+    }
+
+    /**
+     * Accion que se ejecuta cuando se presiona el boton eliminar
+     */
+    private void accionBotonEliminar(View v){
+        final Integer idTarea= (Integer) v.getTag();
+        myDao.borrarTarea(idTarea);
+        ((MainActivity) contexto).changeCursor();
+        System.out.println("Eliminando tarea");
     }
     // TODO Implementar
     private void guardarTiempoEnBd()
