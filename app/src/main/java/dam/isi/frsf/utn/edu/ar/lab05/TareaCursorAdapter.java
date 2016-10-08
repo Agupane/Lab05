@@ -134,9 +134,15 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         {
             tFinalTrabajo=System.currentTimeMillis();
             tiempoTrabajado=tFinalTrabajo-tArranqueTrabajo;
-            minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
+            minutosTrabajados = (int) (( TimeUnit.MILLISECONDS.toSeconds(tiempoTrabajado) )/5);
+           // minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
             myDao.ActualizarMinutosTrabajados(idTarea,minutosTrabajados);
-
+            minutosTrabajados = null;
+            tiempoTrabajado = null;
+            tArranqueTrabajo = null;
+            tFinalTrabajo = null;
+            btnEstado.setChecked(false);
+            changeCursor();
         }
     }
 
