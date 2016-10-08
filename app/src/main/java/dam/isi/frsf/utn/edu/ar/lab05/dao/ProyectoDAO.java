@@ -201,6 +201,26 @@ public class ProyectoDAO {
             return nuevoProyecto;
         }
     }
+    public void ActualizarMinutosTrabajados(Integer idTarea, int minutosTrabajados)
+    {
+        ContentValues valores = new ContentValues();
+        int filasModificadas=0;
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,minutosTrabajados);
+        try {
+            open(true);
 
+            //filasModificadas = db.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_ID="+idTarea, null);
+            db.execSQL("UPDATE " + ProyectoDBMetadata.TABLA_TAREAS + " SET MINUTOS_TRABAJDOS = MINUTOS_TRABAJDOS + "+minutosTrabajados+" WHERE _ID = "+idTarea);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Exploto la bd al actualizar los minutos");
+        }
+        finally
+        {
+            db.close();
+        }
+    }
 
 }

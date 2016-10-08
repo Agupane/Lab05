@@ -30,7 +30,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     private Context contexto;
     private ToggleButton btnEstado;
     private Long tArranqueTrabajo,tFinalTrabajo,tiempoTrabajado;
-    private Button btnEliminar;
+    private Button btnEliminar,btnFinalizar,btnEditar;
     private Integer minutosTrabajados;
     public TareaCursorAdapter (Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
@@ -59,17 +59,17 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         TextView responsable= (TextView) view.findViewById(R.id.tareaResponsable);
         CheckBox finalizada = (CheckBox)  view.findViewById(R.id.tareaFinalizada);
 
-        final Button btnFinalizar = (Button)   view.findViewById(R.id.tareaBtnFinalizada);
-        final Button btnEditar = (Button)   view.findViewById(R.id.tareaBtnEditarDatos);
+        btnFinalizar = (Button)   view.findViewById(R.id.tareaBtnFinalizada);
+        btnEditar = (Button)   view.findViewById(R.id.tareaBtnEditarDatos);
         btnEliminar = (Button) view.findViewById(R.id.tareaBtnEliminar);
         btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
-        btnEstado.setOnClickListener(this);
+
         nombre.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
         tiempoAsignado.setText(Integer.toString(horasAsigandas*60)+" ");
 
-        Integer minutosAsignados = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
-        tiempoTrabajado.setText(" "+minutosAsignados);
+        minutosTrabajados = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
+        tiempoTrabajado.setText(" "+minutosTrabajados);
         String p = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD_ALIAS));
         prioridad.setText(p);
         responsable.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO_ALIAS)));
@@ -84,6 +84,9 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
 
         btnFinalizar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnFinalizar.setOnClickListener(this);
+
+        btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+        btnEstado.setOnClickListener(this);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         {
             case R.id.tareaBtnTrabajando:
             {
-                accionBotonTrabajar();
+                accionBotonTrabajar(v);
                 break;
             }
             case R.id.tareaBtnEditarDatos:
@@ -118,17 +121,20 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     /**
      * Accion que se ejecuta cuando se presiona el boton de trabajar
      */
-    private void accionBotonTrabajar() {
+    private void accionBotonTrabajar(View v) {
+        final Integer idTarea= (Integer) v.getTag();
         if(!btnEstado.isChecked())
         {
             tArranqueTrabajo= System.currentTimeMillis();
+            btnEstado.setChecked(true);
         }
         else
         {
             tFinalTrabajo=System.currentTimeMillis();
             tiempoTrabajado=tFinalTrabajo-tArranqueTrabajo;
             minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
-            guardarTiempoEnBd();
+            myDao.ActualizarMinutosTrabajados(idTarea,minutosTrabajados);
+
         }
     }
 
@@ -166,10 +172,6 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         ((MainActivity) contexto).changeCursor();
         System.out.println("Eliminando tarea");
     }
-    // TODO Implementar
-    private void guardarTiempoEnBd()
-    {
 
-    }
 }
 
