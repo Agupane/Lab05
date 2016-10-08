@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-    android:id="@+id/tareaTitulo"
-    android:lines="2"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="@string/descripcion_de_la_tarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvVerDescripcionBuscada" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDescripcionTareaBuscada" />
+    </LinearLayout>
+
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -18,10 +30,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/tareaVerResponsableBuscada"
             android:layout_weight="1.0"
-            tools:id="@id/tareaVerResponsableBuscada" />
+             />
 
         <TextView
-            android:id="@+id/tareaResponsable"
+            android:id="@+id/tareaResponsableBuscada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"/>
@@ -32,47 +44,50 @@
             android:layout_height="wrap_content"
             android:id="@+id/tareaVerPrioridadBuscada"
             android:layout_weight="1.0"
-            tools:id="@id/tareaVerPrioridadBuscada" />
+           />
 
         <TextView
-            android:id="@+id/tareaPrioridad"
+            android:id="@+id/tareaPrioridadBuscada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"/>
     </LinearLayout>
     <LinearLayout android:orientation="horizontal"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content">
+        android:layout_width="match_parent">
 
         <TextView
-            android:id="@+id/tareaVerMinutosAsignados"
+            android:id="@+id/tareaVerMinutosAsignadosBuscada"
             android:text="@string/min_asignados"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-        />
+            android:layout_weight="1.0"
+            />
 
         <TextView
-            android:id="@+id/tareaMinutosAsignados"
+            android:id="@+id/tareaMinutosAsignadosBuscada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-        />
+            android:layout_weight="1.0"
+            />
 
         <TextView
-            android:id="@+id/tareaVerMinutosTrabajados"
+            android:id="@+id/tareaVerMinutosTrabajadosBuscada"
             android:text="@string/min_trabajados"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-
+            android:layout_weight="1.0"
             />
 
         <TextView
-            android:id="@+id/tareaMinutosTrabajados"
+            android:id="@+id/tareaMinutosTrabajadosBuscada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:layout_weight="1.0"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -80,48 +95,11 @@
         android:layout_height="wrap_content">
 
         <CheckBox
-            android:id="@+id/tareaFinalizada"
+            android:id="@+id/tareaFinalizadaBuscada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
             android:focusable="false"
             android:text="@string/finalizada"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <ToggleButton
-            android:id="@+id/tareaBtnTrabajando"
-            android:textOn="@string/trabajando"
-            android:textOff="@string/trabajar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            />
-        <Button
-            android:id="@+id/tareaBtnEditarDatos"
-            android:text="@string/editar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-
-            />
-        <Button
-            android:id="@+id/tareaBtnFinalizada"
-            android:text="@string/finalizar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            />
-
-        <Button
-            android:text="@string/eliminar"
-            android:id="@+id/tareaBtnEliminar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            />
     </LinearLayout>
 </LinearLayout>

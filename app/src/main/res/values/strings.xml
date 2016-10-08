@@ -22,4 +22,5 @@
     <string name="min_trabajados">Min trabajados:</string>
     <string name="trabajando">Trabajando</string>
     <string name="trabajar">Trabajar</string>
+    <string name="descripcion_de_la_tarea">Descripcion de la tarea:</string>
 </resources>
