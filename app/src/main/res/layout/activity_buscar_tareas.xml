@@ -52,6 +52,7 @@
             android:layout_height="0dp"
             android:id="@+id/switchTareaTerminada"
             android:layout_weight="1" />
+
         <Button
             android:text="@string/buscar"
             android:layout_width="match_parent"
@@ -61,23 +62,5 @@
     </LinearLayout>
 
 
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:text="@string/listas_de_tareas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvVerResultado" />
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/lvTareasResultado" />
-
-    </LinearLayout>
 
 </LinearLayout>

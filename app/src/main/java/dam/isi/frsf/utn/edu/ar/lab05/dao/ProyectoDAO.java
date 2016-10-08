@@ -170,29 +170,60 @@ public class ProyectoDAO {
         Cursor resultadoTareas;
         List<Tarea> listaTareasDesviadas = new ArrayList<>();
         Tarea nuevaTarea;
-        if(soloTerminadas)
-        {
-            resultadoTareas= db.rawQuery("SELECT * FROM "+ProyectoDBMetadata.TABLA_TAREAS+" WHERE "+ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA +" = "+1,null);
+        try {
+            open(false);
+            if(soloTerminadas)
+            {
+               resultadoTareas= db.rawQuery("SELECT * FROM "+ProyectoDBMetadata.TABLA_TAREAS+" WHERE "+ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA +" = "+1,null);
+            }
+            else
+            {
+                resultadoTareas= db.rawQuery("SELECT * FROM "+ProyectoDBMetadata.TABLA_TAREAS,null);
+            }
+            while (resultadoTareas.moveToNext())
+            {
+                Integer idTarea = resultadoTareas.getInt(0);
+                String descripcion = resultadoTareas.getString(1);
+                Integer horasEstimadas = resultadoTareas.getInt(2);
+                Integer minutosTrabajados = resultadoTareas.getInt(3);
+                Prioridad prioridad = getPrioridad(resultadoTareas.getInt(4));
+                Usuario responsable = getUsuario(resultadoTareas.getInt(5));
+                Proyecto proyecto = getProyecto(resultadoTareas.getInt(6));
+                Boolean finalizada;
+                if(resultadoTareas.getInt(7) == 0 )
+                {
+                    finalizada=false;
+                }
+                else {
+                    finalizada = true;
+                }
+                nuevaTarea = new Tarea(idTarea,finalizada,horasEstimadas,minutosTrabajados,proyecto,prioridad,responsable,descripcion);
+                listaTareasDesviadas.add(nuevaTarea);
+            }
+            listaTareasDesviadas = filtrarTareas(listaTareasDesviadas,desvioMaximoMinutos); // Selecciona solo las que tengan el mayor desvio, despues hay que cambiar esto pq es horrible
         }
-        else
+        catch(Exception e)
         {
-            resultadoTareas= db.rawQuery("SELECT * FROM "+ProyectoDBMetadata.TABLA_TAREAS,null);
+            e.printStackTrace();
+            //System.out.println(e.getMessage());
+            System.out.println("Bd exploto al internet buscar desvios");
         }
-        while (resultadoTareas.moveToNext())
+        finally
         {
-            // Primer parameto el id, segundo el nombre y tercero el email
-            Integer idTarea = resultadoTareas.getInt(0);
-            String descripcion = resultadoTareas.getString(1);
-            Integer horasEstimadas = resultadoTareas.getInt(2);
-            Integer minutosTrabajados = resultadoTareas.getInt(3);
-            Prioridad prioridad = getPrioridad(resultadoTareas.getInt(4));
-            Usuario responsable = getUsuario(resultadoTareas.getInt(5));
-            Proyecto proyecto = getProyecto(resultadoTareas.getInt(6));
-            Boolean finalizada = soloTerminadas;
-            nuevaTarea = new Tarea(idTarea,finalizada,horasEstimadas,minutosTrabajados,proyecto,prioridad,responsable,descripcion);
-            listaTareasDesviadas.add(nuevaTarea);
+            return listaTareasDesviadas;
         }
-        return listaTareasDesviadas;
+    }
+
+    /**
+     * TODO Implementar la consulta bien y borrar esto, es solo temporal
+     * Filtra las tareas segun el numero de desvio, METODO A BORRAR
+     * @param listaTareas
+     * @param desvio
+     * @return
+     */
+    private List<Tarea> filtrarTareas(List<Tarea> listaTareas,Integer desvio)
+    {
+        return listaTareas;
     }
     public Prioridad getPrioridad (Integer idPrioridad) {
         Prioridad prioridad = new Prioridad();

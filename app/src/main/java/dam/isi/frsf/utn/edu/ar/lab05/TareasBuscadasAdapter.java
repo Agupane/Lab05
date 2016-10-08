@@ -38,27 +38,28 @@ public class TareasBuscadasAdapter extends ArrayAdapter{
             row = inflater.inflate(R.layout.fila_tarea_buscada, parent, false);
         }
         cargarVariables(row,position);
-/*
-        TextView txtPrecio = (TextView) row.findViewById(R.id.precio);
-        txtPrecio.setText("$" + (df.format(this.getItem(position).getPrecio())));
-*/
         return (row);
     }
     private void cargarVariables(View row,int position)
     {
-        Tarea tarea = (Tarea) this.getItem(position);
         tvDescripcionTarea = (TextView) row.findViewById(R.id.tvDescripcionTareaBuscada);
         tvMinutosAsignados = (TextView) row.findViewById(R.id.tareaMinutosAsignadosBuscada);
         tvMinutosTrabajados = (TextView) row.findViewById(R.id.tareaMinutosTrabajadosBuscada);
         tvTareaPrioridad = (TextView) row.findViewById(R.id.tareaPrioridadBuscada);
         tvTareaResponsable = (TextView) row.findViewById(R.id.tareaResponsableBuscada);
         cbTareaFinalizada = (CheckBox) row.findViewById(R.id.tareaFinalizadaBuscada);
-
-        tvDescripcionTarea.setText(tarea.getDescripcion());
-        tvMinutosTrabajados.setText(tarea.getMinutosTrabajados());
-        tvMinutosAsignados.setText(tarea.getHorasEstimadas());
-        tvTareaPrioridad.setText(tarea.getPrioridad().getPrioridad());
-        tvTareaResponsable.setText(tarea.getResponsable().getNombre());
-        cbTareaFinalizada.setChecked(tarea.getFinalizada());
+        try {
+            Tarea tarea = (Tarea) this.getItem(position);
+            tvDescripcionTarea.setText(tarea.getDescripcion());
+            tvTareaPrioridad.setText(tarea.getPrioridad().getPrioridad());
+            tvTareaResponsable.setText(tarea.getResponsable().getNombre());
+            cbTareaFinalizada.setChecked(tarea.getFinalizada());
+            tvMinutosTrabajados.setText(Integer.toString(tarea.getMinutosTrabajados()));
+            tvMinutosAsignados.setText(Integer.toString(tarea.getHorasEstimadas()));
+        }
+        catch(Exception e)
+        {
+            System.out.println("Error al cargar tareas buscadas");
+        }
     }
 }

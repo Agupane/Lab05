@@ -1,5 +1,6 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,11 +26,7 @@ public class BuscarTareasActivity extends AppCompatActivity {
     private Switch switchTareaTerminada;
     private Integer minutosDesviadosBuscados;
     private Boolean buscarTareasTerminadas;
-    private ProyectoDAO proyectoDAO;
-    private Cursor cursor;
-    private ArrayAdapter listaTareasBuscadasAdapter;
-    private ListView lvTareasBuscadas;
-    private ArrayList<Tarea> listaTareasBuscadas;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,9 +34,8 @@ public class BuscarTareasActivity extends AppCompatActivity {
         botonBuscar = (Button) findViewById(R.id.bBuscar);
         switchTareaTerminada = (Switch) findViewById(R.id.switchTareaTerminada);
         etMinDesviados = (EditText) findViewById(R.id.etMinDesviados);
-        proyectoDAO = new ProyectoDAO(this);
-        lvTareasBuscadas = (ListView) findViewById(R.id.lvTareasResultado);
 
+        buscarTareasTerminadas = false;
 
         switchTareaTerminada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -50,10 +46,16 @@ public class BuscarTareasActivity extends AppCompatActivity {
         botonBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                minutosDesviadosBuscados = Integer.getInteger( etMinDesviados.getText().toString() );
-                listaTareasBuscadas = (ArrayList) proyectoDAO.listarDesviosPlanificacion(buscarTareasTerminadas,minutosDesviadosBuscados);
-                listaTareasBuscadasAdapter = new TareasBuscadasAdapter(BuscarTareasActivity.this,listaTareasBuscadas);
-                lvTareasBuscadas.setAdapter(listaTareasBuscadasAdapter);
+                String desvio = etMinDesviados.getText().toString();
+                minutosDesviadosBuscados = Integer.valueOf(desvio);
+
+                if(minutosDesviadosBuscados !=null) {
+                    Intent intActAlta= new Intent(BuscarTareasActivity.this,ListarTareasBuscadasActivity.class);
+                    intActAlta.putExtra("MinutosDesvioBuscados", minutosDesviadosBuscados);
+                    intActAlta.putExtra("TareaTerminada",buscarTareasTerminadas);
+                    startActivityForResult(intActAlta,1);
+
+                }
             }
         });
     }

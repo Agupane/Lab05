@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AltaTareaActivity" />
-        <activity android:name=".BuscarTareasActivity"></activity>
+        <activity android:name=".BuscarTareasActivity" />
+        <activity android:name=".ListarTareasBuscadasActivity"></activity>
     </application>
 
 </manifest>
