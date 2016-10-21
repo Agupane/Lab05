@@ -10,11 +10,21 @@ import org.json.JSONObject;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.Manifest;
+
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class EjemploContactos extends AppCompatActivity {
 
@@ -70,4 +80,34 @@ public class EjemploContactos extends AppCompatActivity {
         }
         Log.d("TEST-ARR",arr.toString());
     }
+    public Usuario buscarContacto(String nombreBuscado){
+        Usuario usuario = new Usuario();
+        final StringBuilder resultado = new StringBuilder();
+        Uri uri = ContactsContract.Contacts.CONTENT_URI;
+        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+
+        Cursor result =this.getContentResolver().query(uri, null, ContactsContract.Contacts.DISPLAY_NAME+" LIKE '"+nombreBuscado+"%'", null, sortOrder);
+        Integer idPry= 0;
+        if(result.moveToFirst()){
+            idPry=result.getInt(0);
+            result.moveToFirst();
+            usuario.setId(result.getInt(0));
+            usuario.setNombre(nombreBuscado);
+            usuario.setCorreoElectronico(result.getString(1));
+            result.close();
+        }
+        return usuario;
+    }
+    public List<Usuario> listarContactos(){
+        pedirPermisos();
+        List<Usuario> listaUsuarios = new ArrayList<>();
+        listaUsuarios.add(buscarContacto("martin"));
+        return listaUsuarios;
+       //
+    }
+    private void pedirPermisos() {
+        EjemploPermisos permisos = new EjemploPermisos();
+        permisos.askForContactPermission();
+    }
+
 }

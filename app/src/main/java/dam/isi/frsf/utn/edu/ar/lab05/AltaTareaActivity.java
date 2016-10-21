@@ -25,6 +25,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     private ArrayAdapter adapterListaUsuarios;
     private List<Usuario> listaUsuarios;
     private ProyectoDAO proyectoDAO;
+    private EjemploContactos ejemploContactos;
     private SeekBar sbPrioridad;
     private Integer horasEstimadas,intPrioridad;
     private Prioridad prioridad;
@@ -41,7 +42,9 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
         cargarComponentes();
-        listaUsuarios=proyectoDAO.listarUsuarios();
+
+        //listaUsuarios=proyectoDAO.listarUsuarios();
+        listaUsuarios = ejemploContactos.listarContactos();
         edicion = false;
 
 
@@ -55,8 +58,6 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
                 etHorasEstimadas.setText(Integer.toString( tareaAEditar.getHorasEstimadas() ));
                 sbPrioridad.setProgress(Integer.valueOf(tareaAEditar.getPrioridad().getPrioridad()));
                 swapListas();
-
-
             }
         }
         adapterListaUsuarios = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,listaUsuarios);
@@ -102,6 +103,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         prioridad = new Prioridad();
         listaUsuarios = new ArrayList();
         proyectoDAO = new ProyectoDAO(this);
+        ejemploContactos = new EjemploContactos();
 
     }
 

@@ -23,7 +23,7 @@ public class AltaUsuarioActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  setContentView(R.layout.activity_alta_usuario);
+        setContentView(R.layout.activity_alta_usuario);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

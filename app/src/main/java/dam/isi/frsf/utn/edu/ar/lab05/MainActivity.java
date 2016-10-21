@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         switch(requestCode)
         {
 
-            case 0: // Alta actividad
+            case 0: // Alta tarea
             {
                 switch(resultCode)
                 {
