@@ -44,7 +44,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         cargarComponentes();
 
         //listaUsuarios=proyectoDAO.listarUsuarios();
-        listaUsuarios = ejemploContactos.listarContactos();
+        listaUsuarios = ejemploContactos.listarContactos(this);
         edicion = false;
 
 

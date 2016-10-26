@@ -1,11 +1,13 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ProyectoDAO proyectoDAO;
     private Cursor cursor;
     private TareaCursorAdapter tca;
+    private EjemploPermisos ejemploPermisos;
     public static final int RESULT_BACK = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ejemploPermisos = new EjemploPermisos();
+                ejemploPermisos.askForContactPermission();
                 Intent intActAlta= new Intent(MainActivity.this,AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
                 startActivityForResult(intActAlta,0);

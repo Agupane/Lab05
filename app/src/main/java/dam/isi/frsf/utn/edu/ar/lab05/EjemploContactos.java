@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,12 +100,23 @@ public class EjemploContactos extends AppCompatActivity {
         }
         return usuario;
     }
-    public List<Usuario> listarContactos(){
+    public List<Usuario> listarContactos(Context context){
         pedirPermisos();
         List<Usuario> listaUsuarios = new ArrayList<>();
-        listaUsuarios.add(buscarContacto("martin"));
+
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                Usuario usuario = new Usuario();
+                usuario.setNombre(name);
+                //TODO setearle algo mas al usuario/contacto? Email, etc
+                listaUsuarios.add(usuario);
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
         return listaUsuarios;
-       //
     }
     private void pedirPermisos() {
         EjemploPermisos permisos = new EjemploPermisos();
