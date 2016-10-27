@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ejemploPermisos = new EjemploPermisos();
-                ejemploPermisos.askForContactPermission();
+                ejemploPermisos.askForContactPermission(MainActivity.this);
                 Intent intActAlta= new Intent(MainActivity.this,AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
                 startActivityForResult(intActAlta,0);

@@ -6,6 +6,8 @@ package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -24,12 +26,12 @@ public class EjemploPermisos extends AppCompatActivity {
     private boolean flagPermisoPedido;
     private static final int PERMISSION_REQUEST_CONTACT =999;
 
-    public void askForContactPermission(){
+    public void askForContactPermission(Context context){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(EjemploPermisos.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(EjemploPermisos.this,
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity)context,
                         Manifest.permission.CALL_PHONE)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(EjemploPermisos.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("Permisos Peligrosos!!!");
                     builder.setPositiveButton(android.R.string.ok, null);
                     builder.setMessage("Puedo acceder a un permiso peligroso???");
@@ -47,7 +49,7 @@ public class EjemploPermisos extends AppCompatActivity {
                     builder.show();
                 } else {
                     flagPermisoPedido=true;
-                    ActivityCompat.requestPermissions(EjemploPermisos.this,
+                    ActivityCompat.requestPermissions((Activity)context,
                             new String[]
                                     {Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
                             , PERMISSION_REQUEST_CONTACT);

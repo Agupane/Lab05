@@ -101,7 +101,7 @@ public class EjemploContactos extends AppCompatActivity {
         return usuario;
     }
     public List<Usuario> listarContactos(Context context){
-        pedirPermisos();
+        pedirPermisos(context);
         List<Usuario> listaUsuarios = new ArrayList<>();
 
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
@@ -118,9 +118,9 @@ public class EjemploContactos extends AppCompatActivity {
         cursor.close();
         return listaUsuarios;
     }
-    private void pedirPermisos() {
+    private void pedirPermisos(Context context) {
         EjemploPermisos permisos = new EjemploPermisos();
-        permisos.askForContactPermission();
+        permisos.askForContactPermission(context);
     }
 
 }
