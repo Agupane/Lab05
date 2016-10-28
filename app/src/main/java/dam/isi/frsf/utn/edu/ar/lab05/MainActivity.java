@@ -150,6 +150,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intActBuscar);
                 break;
             }
+            case R.id.consultar_proyectos:{
+                Intent intActConsultarProyectos = new Intent(MainActivity.this,ListarProyectosBuscadosActivity.class);
+                startActivity(intActConsultarProyectos);
+                break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

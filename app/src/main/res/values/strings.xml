@@ -23,4 +23,9 @@
     <string name="trabajando">Trabajando</string>
     <string name="trabajar">Trabajar</string>
     <string name="descripcion_de_la_tarea">Descripcion de la tarea:</string>
+    <string name="action_consultar_proyectos">Consultar Proyectos</string>
+    <string name="action_buscar_proyectos">Listar Proyectos</string>
+    <string name="listas_de_proyectos">Lista de proyectos</string>
+    <string name="nombre_proyecto">Nombre proyecto</string>
+    <string name="proyecto">Nombre Proyecto</string>
 </resources>

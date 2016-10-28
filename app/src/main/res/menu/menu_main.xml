@@ -8,6 +8,11 @@
         android:title="@string/action_buscar_tareas"
         />
     <item
+        android:id="@+id/consultar_proyectos"
+        android:orderInCategory="100"
+        android:title="@string/action_consultar_proyectos"
+        />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
