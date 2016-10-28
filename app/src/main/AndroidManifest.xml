@@ -23,7 +23,7 @@
         <activity android:name=".AltaTareaActivity" />
         <activity android:name=".BuscarTareasActivity" />
         <activity android:name=".ListarTareasBuscadasActivity"></activity>
-        <activity android:name=".ListarProyectosBuscadosActivity"></activity>
+        <activity android:name=".ListarProyectosActivity"></activity>
     </application>
 
 </manifest>

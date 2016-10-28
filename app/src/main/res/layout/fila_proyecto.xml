@@ -28,33 +28,17 @@
         android:layout_height="wrap_content"
         >
 
-        <ToggleButton
-            android:id="@+id/tareaBtnTrabajando"
-            android:textOn="@string/trabajando"
-            android:textOff="@string/trabajar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            />
         <Button
-            android:id="@+id/tareaBtnEditarDatos"
+            android:id="@+id/proyectoBtnEditar"
             android:text="@string/editar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
-
-            />
-        <Button
-            android:id="@+id/tareaBtnFinalizada"
-            android:text="@string/finalizar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            />
+    />
 
         <Button
             android:text="@string/eliminar"
-            android:id="@+id/tareaBtnEliminar"
+            android:id="@+id/proyectoBtnEliminar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"

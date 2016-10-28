@@ -28,4 +28,5 @@
     <string name="listas_de_proyectos">Lista de proyectos</string>
     <string name="nombre_proyecto">Nombre proyecto</string>
     <string name="proyecto">Nombre Proyecto</string>
+    <string name="action_nuevo_proyecto">Nuevo Proyecto</string>
 </resources>

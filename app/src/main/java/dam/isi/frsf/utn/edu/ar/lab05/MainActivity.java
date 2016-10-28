@@ -1,18 +1,12 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -151,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.consultar_proyectos:{
-                Intent intActConsultarProyectos = new Intent(MainActivity.this,ListarProyectosBuscadosActivity.class);
+                Intent intActConsultarProyectos = new Intent(MainActivity.this,ListarProyectosActivity.class);
                 startActivity(intActConsultarProyectos);
                 break;
             }

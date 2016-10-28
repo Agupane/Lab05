@@ -169,7 +169,6 @@ public class ProyectoDAO {
             System.out.println(e.getMessage());
             System.out.println("Bd exploto al eliminar tarea");
         }
-
     }
 
     public List<Prioridad> listarPrioridades(){
@@ -351,6 +350,54 @@ public class ProyectoDAO {
         }
         return nuevoProyecto;
     }
+
+    /**
+     * Borra proyecto por id
+     * @param idProyecto
+     */
+    public void borrarProyecto(int idProyecto)
+    {
+        String[] args = { String.valueOf(idProyecto) };
+        try
+        {
+            open(true);
+            db.delete(ProyectoDBMetadata.TABLA_PROYECTO,"_id=?", args);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Bd exploto al eliminar proyecto");
+        }
+    }
+
+    public List<Proyecto> listarProyectos() {
+        Proyecto nuevoProyecto;
+        List<Proyecto> listaProyectos = new ArrayList<>();
+        try {
+            open(false);
+            Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaProyectoMetadata._ID + "," + ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM " + ProyectoDBMetadata.TABLA_PROYECTO, null);
+            while (result.moveToNext()) {
+                // Primer parameto el id, segundo el nombre y tercero el email
+                nuevoProyecto = new Proyecto(result.getInt(0), result.getString(1));
+                listaProyectos.add(nuevoProyecto);
+            }
+            result.close();
+        } catch (Exception e) {
+            System.out.println("Exploto la bd al listar proyectos");
+        } finally {
+            return listaProyectos;
+        }
+    }
+    public Cursor getCursorProyectos(){
+            Cursor cursorPry = null;
+            cursorPry = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID+ " AS _id"+" FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
+      //      cursorPry.moveToFirst();
+          //  System.out.println("ID :"+cursorPry.getInt(0));
+            //System.out.println("ID :"+cursorPry.getInt(0)+" Nombre "+cursorPry.getString(1));
+            return cursorPry;
+    }
+
+
     public void ActualizarMinutosTrabajados(Integer idTarea, int minutosTrabajados)
     {
         ContentValues valores = new ContentValues();
