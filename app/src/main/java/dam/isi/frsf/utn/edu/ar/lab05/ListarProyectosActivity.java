@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class ListarProyectosActivity extends AppCompatActivity {
     private Cursor cursor;
     private ProyectoCursorAdapter pca;
     private Intent intent;
+    public static final int RESULT_BACK = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +41,6 @@ public class ListarProyectosActivity extends AppCompatActivity {
         listaProyectosAdapter = new ProyectosBuscadosAdapter(ListarProyectosActivity.this, listaProyectos);
         lvProyectos.setAdapter(listaProyectosAdapter);
         */
-
 
     }
     @Override
@@ -60,8 +61,8 @@ public class ListarProyectosActivity extends AppCompatActivity {
         {
           //  case R.id.action_settings: return true;
             case R.id.action_nuevo_proyecto:{
-             //   Intent intAltaProyecto= new Intent(ListarProyectosActivity.this,AltaProyectoActivity.class);
-          //      startActivity(intAltaProyecto);
+                Intent intAltaProyecto= new Intent(ListarProyectosActivity.this,AltaProyectoActivity.class);
+                startActivityForResult(intAltaProyecto,0);
                 break;
             }
         }
@@ -93,4 +94,53 @@ public class ListarProyectosActivity extends AppCompatActivity {
      //   Log.d("LAB05-MAIN","fin on pausa");
 
     }
+    protected void onActivityResult(int requestCode,int resultCode,Intent data)
+    {
+        switch(requestCode)
+        {
+            case 0: // Alta proyecto
+            {
+                switch(resultCode)
+                {
+                    case RESULT_OK:
+                    {
+                        pca.changeCursor();
+                        Toast.makeText(getApplicationContext(),"La operacion de alta se realizo exitosamente",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case RESULT_CANCELED:
+                    {
+                        Toast.makeText(getApplicationContext(),"La operacion de alta no se pudo llevar a cabo, intente mas tarde",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case RESULT_BACK:
+                    {
+                        break;
+                    }
+                    default: {break;}
+                }
+            }
+            case 1: // Editar proyecto
+            {
+                switch(resultCode)
+                {
+                    case RESULT_OK:
+                    {
+                        pca.changeCursor();
+                        Toast.makeText(getApplicationContext(),"La operacion de edicion se realizo exitosamente",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case RESULT_CANCELED:
+                    {
+                        Toast.makeText(getApplicationContext(),"La operacion de edicion no se pudo llevar a cabo, intente mas tarde",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    default: {break;}
+                }
+            }
+            default: {break;}
+        }
+
+    }
+
 }

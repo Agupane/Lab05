@@ -93,13 +93,11 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
      * TODO Terminar de armar el editar y devolver un resultado
      */
     private void accionBotonEditarDatos(View view) {
-      /*
         final Integer idProyecto= (Integer) view.getTag();
-        Intent intEditarAct = new Intent(contexto,AltaTareaActivity.class);
+        Intent intEditarAct = new Intent(contexto,AltaProyectoActivity.class);
         intEditarAct.putExtra("ID_PROYECTO",idProyecto);
         intEditarAct.putExtra("RESULT_CODE",1);
         ((Activity) contexto).startActivityForResult(intEditarAct,1);
-        */
     }
 
     /**

@@ -18,10 +18,15 @@ import java.util.ArrayList;
 public class ProyectoOpenHelper extends SQLiteOpenHelper {
 
     private Context context;
-
+    private boolean dropAndCreate = false;
     public ProyectoOpenHelper(Context context) {
         super(context, ProyectoDBMetadata.NOMBRE_DB, null, ProyectoDBMetadata.VERSION_DB);
         this.context=context;
+        if(dropAndCreate)
+        {
+            onCreate (getWritableDatabase() );
+        }
+
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -39,6 +44,7 @@ public class ProyectoOpenHelper extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         //db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
+
 
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

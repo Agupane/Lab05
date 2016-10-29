@@ -344,7 +344,6 @@ public class ProyectoDAO {
         }
         catch(Exception e)
         {
-            System.out.println(e.getMessage());
             System.out.println("Exploto la bd al buscar un proyecto");
 
         }
@@ -369,7 +368,32 @@ public class ProyectoDAO {
             System.out.println("Bd exploto al eliminar proyecto");
         }
     }
+    public void nuevoProyecto(Proyecto nuevoProyecto)
+    {
+        ContentValues datosAGuardar = new ContentValues();
+        datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO,nuevoProyecto.getNombre());
+        open(true);
+        try {
+            db.insert(ProyectoDBMetadata.TABLA_PROYECTO,null,datosAGuardar);
+        }
+        catch(Exception e)
+        {
 
+            System.out.println("BD Exploto en el insert de proyecto");
+        }
+    }
+    public void actualizarProyecto(Proyecto p){
+        ContentValues datosAGuardar = new ContentValues();
+        datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO,p.getNombre());
+        open(true);
+        try {
+            db.update(ProyectoDBMetadata.TABLA_PROYECTO,datosAGuardar,ProyectoDBMetadata.TablaProyectoMetadata._ID+"="+p.getId(),null);
+        }
+        catch(Exception e)
+        {
+            System.out.println("BD Exploto al actualizar proyecto");
+        }
+    }
     public List<Proyecto> listarProyectos() {
         Proyecto nuevoProyecto;
         List<Proyecto> listaProyectos = new ArrayList<>();
@@ -390,7 +414,7 @@ public class ProyectoDAO {
     }
     public Cursor getCursorProyectos(){
             Cursor cursorPry = null;
-            cursorPry = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID+ " AS _id"+" FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
+            cursorPry = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID+ " AS _id "+", "+ProyectoDBMetadata.TablaProyectoMetadata.TITULO +" FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
       //      cursorPry.moveToFirst();
           //  System.out.println("ID :"+cursorPry.getInt(0));
             //System.out.println("ID :"+cursorPry.getInt(0)+" Nombre "+cursorPry.getString(1));

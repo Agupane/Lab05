@@ -11,7 +11,9 @@ public class Proyecto {
     public Proyecto() {
 
     }
-
+    public Proyecto(String nombre) {
+        this.nombre=nombre;
+    }
 
     public Proyecto(Integer id, String nombre) {
         this.id = id;
