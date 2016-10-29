@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     case RESULT_OK:
                     {
                         this.tca.changeCursor();
+
                         Toast.makeText(getApplicationContext(),"La operacion de edicion se realizo exitosamente",Toast.LENGTH_LONG).show();
                         break;
                     }
@@ -98,26 +99,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("LAB05-MAIN","en resume");
         proyectoDAO = new ProyectoDAO(MainActivity.this);
         proyectoDAO.open();
         cursor = proyectoDAO.listaTareas(1);
-        Log.d("LAB05-MAIN","mediol "+cursor.getCount());
-
         tca = new TareaCursorAdapter(MainActivity.this,cursor,proyectoDAO);
         lvTareas.setAdapter(tca);
-        Log.d("LAB05-MAIN","fin resume");
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("LAB05-MAIN","on pausa");
-
         if(cursor!=null) cursor.close();
         if(proyectoDAO!=null) proyectoDAO.close();
-        Log.d("LAB05-MAIN","fin on pausa");
-
     }
 
     @Override

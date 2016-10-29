@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 /**
  * Created by Agustin on 10/20/2016.
@@ -30,6 +31,9 @@ public class ProyectoApiRest {
         JSONObject t = cliRest.getById(1,"proyectos");
         // transformar el objeto JSON a proyecto y retornarlo
         return null;
+    }
+    public void guardarUsuario (Usuario nuevoUsuario){
+
     }
 
 }

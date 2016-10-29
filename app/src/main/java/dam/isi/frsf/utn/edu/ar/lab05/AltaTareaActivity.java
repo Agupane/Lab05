@@ -42,12 +42,9 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
         cargarComponentes();
-
-        //listaUsuarios=proyectoDAO.listarUsuarios();
-        listaUsuarios = ejemploContactos.listarContactos(this);
-
+         //listaUsuarios=proyectoDAO.listarUsuarios();
+        listaUsuarios = ejemploContactos.listarContactos(this); // Obtiene los contactos de la lista de contactos
         edicion = false;
-
 
         if( (getIntent().getIntExtra("RESULT_CODE",2)) == 1) // Significa que soy una activity de editar
         {
@@ -159,8 +156,11 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         {
             setResult(RESULT_CANCELED);
         }
-         if(!descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
+         if(descripcionTarea!=null && !descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
           {
+              if(usuarioSeleccionado == null){System.out.println("USUARIO NULO");}
+              usuarioSeleccionado = proyectoDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA
+              if(usuarioSeleccionado == null){System.out.println("USUARIO NULO 2");}
               nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
               if(edicion) // Si estoy editando una tarea
               {

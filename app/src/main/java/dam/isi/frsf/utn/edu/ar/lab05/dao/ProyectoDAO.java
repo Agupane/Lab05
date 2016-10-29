@@ -9,6 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import dam.isi.frsf.utn.edu.ar.lab05.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
@@ -40,9 +41,10 @@ public class ProyectoDAO {
     private ProyectoOpenHelper dbHelper;
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
-
+    private ProyectoApiRest daoApiRest;
     public ProyectoDAO(Context c){
         this.dbHelper = new ProyectoOpenHelper(c);
+        this.daoApiRest = new ProyectoApiRest();
     }
 
     public void open(){
@@ -194,31 +196,6 @@ public class ProyectoDAO {
             return prioridad;
         }
     }
-    public List<Usuario> listarUsuarios(){
-        Usuario nuevoUsuario;
-        listaUsuarios = new ArrayList<>();
-        try
-        {
-            open(false);
-            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaUsuariosMetadata._ID+","+ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO+","+ProyectoDBMetadata.TablaUsuariosMetadata.MAIL+ " FROM "+ProyectoDBMetadata.TABLA_USUARIOS,null);
-            while (result.moveToNext())
-            {
-                // Primer parameto el id, segundo el nombre y tercero el email
-                nuevoUsuario = new Usuario(result.getInt(0), result.getString(1), result.getString(2));
-                listaUsuarios.add(nuevoUsuario);
-            }
-            result.close();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exploto la bd al listar usuarios");
-        }
-        finally
-        {
-            return listaUsuarios;
-        }
-
-    }
 
     public void finalizar(Integer idTarea){
         //Establecemos los campos-valores a actualizar
@@ -304,11 +281,12 @@ public class ProyectoDAO {
     }
 
     public Usuario getUsuario(Integer idUsuario){
-        Usuario usuario = new Usuario();
+        Usuario usuario = null;
         try {
             open(false);
             Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO +" , "+ ProyectoDBMetadata.TablaUsuariosMetadata.MAIL + " FROM " + ProyectoDBMetadata.TABLA_USUARIOS+ " WHERE " + ProyectoDBMetadata.TablaUsuariosMetadata._ID+" = " + idUsuario, null);
             result.moveToFirst();
+            usuario = new Usuario();
             usuario.setId(idUsuario);
             usuario.setNombre(result.getString(0));
             usuario.setCorreoElectronico(result.getString(1));
@@ -316,12 +294,61 @@ public class ProyectoDAO {
 
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
             System.out.println("Error al buscar un usuario");
+            usuario = null;
         }
         finally {
             return usuario;
         }
+    }
+
+    public List<Usuario> listarUsuarios(){
+        Usuario nuevoUsuario;
+        listaUsuarios = new ArrayList<>();
+        try
+        {
+            open(false);
+            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaUsuariosMetadata._ID+","+ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO+","+ProyectoDBMetadata.TablaUsuariosMetadata.MAIL+ " FROM "+ProyectoDBMetadata.TABLA_USUARIOS,null);
+            while (result.moveToNext())
+            {
+                // Primer parameto el id, segundo el nombre y tercero el email
+                nuevoUsuario = new Usuario(result.getInt(0), result.getString(1), result.getString(2));
+                listaUsuarios.add(nuevoUsuario);
+            }
+            result.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exploto la bd al listar usuarios");
+        }
+        finally
+        {
+            return listaUsuarios;
+        }
+    }
+    /**
+     * Si el usuario existe no hace nada, si no existe lo guarde
+     * Devuelve el usuario pasado por parametro pero actualizado con el ID (si este no existia)
+     * @param nuevoUsuario
+     */
+    public Usuario guardarUsuario(Usuario nuevoUsuario)
+    {
+        if(getUsuario(nuevoUsuario.getId())==null) {
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL, nuevoUsuario.getCorreoElectronico());
+            datosAGuardar.put(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO, nuevoUsuario.getNombre());
+            open(true);
+            try {
+                long idFilaNuevoUsuario;
+                idFilaNuevoUsuario = db.insert(ProyectoDBMetadata.TABLA_USUARIOS, null, datosAGuardar);
+                nuevoUsuario.setId((int) idFilaNuevoUsuario);
+                daoApiRest.guardarUsuario(nuevoUsuario);
+            } catch (Exception e) {
+                System.out.println("BD Exploto en el insert de usuario");
+            }
+
+        }
+        return nuevoUsuario;
     }
 
     /**
