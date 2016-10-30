@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.ProyectoException;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 
@@ -69,7 +70,12 @@ public class ListarProyectosActivity extends AppCompatActivity {
         super.onResume();
         proyectoDAO = new ProyectoDAO(ListarProyectosActivity.this);
         proyectoDAO.open();
-        cursor = proyectoDAO.getCursorProyectos();
+        try {
+            cursor = proyectoDAO.getCursorProyectos();
+        }
+        catch(ProyectoException e){
+            cursor = null;
+        }
         pca = new ProyectoCursorAdapter(ListarProyectosActivity.this,cursor,proyectoDAO);
         lvProyectos.setAdapter(pca);
 

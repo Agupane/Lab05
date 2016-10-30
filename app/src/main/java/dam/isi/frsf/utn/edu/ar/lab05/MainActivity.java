@@ -15,11 +15,13 @@ import android.widget.Toast;
 
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
 
 public class MainActivity extends AppCompatActivity {
 
     private ListView lvTareas;
     private ProyectoDAO proyectoDAO;
+    private TareaDAO tareaDAO;
     private Cursor cursor;
     private TareaCursorAdapter tca;
     private EjemploPermisos ejemploPermisos;
@@ -99,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        proyectoDAO = new ProyectoDAO(MainActivity.this);
-        proyectoDAO.open();
-        cursor = proyectoDAO.listaTareas(1);
-        tca = new TareaCursorAdapter(MainActivity.this,cursor,proyectoDAO);
+        tareaDAO = new TareaDAO(MainActivity.this);
+        tareaDAO.open();
+        cursor = tareaDAO.listaTareas(1);
+        tca = new TareaCursorAdapter(MainActivity.this,cursor,tareaDAO);
         lvTareas.setAdapter(tca);
 
     }

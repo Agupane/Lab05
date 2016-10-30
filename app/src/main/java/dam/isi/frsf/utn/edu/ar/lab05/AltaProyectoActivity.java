@@ -71,31 +71,29 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
     {
         try {
             nombreProyecto = String.valueOf(etNombreProyecto.getText());
-        }
-        catch(Exception e)
-        {
-            setResult(RESULT_CANCELED);
-        }
-         if(!nombreProyecto.isEmpty()) // Si no hay datos vacio continuo
-          {
-              if(edicion) // Si estoy editando un proyecto
-              {
-                  nuevoProyecto.setNombre(nombreProyecto);
-                  proyectoDAO.actualizarProyecto(nuevoProyecto);
-              }
-              else // Estoy dando de alta un proyecto
-              {
-                  nuevoProyecto.setNombre(nombreProyecto);
-                  proyectoDAO.nuevoProyecto(nuevoProyecto);
-              }
+            if(!nombreProyecto.isEmpty()) // Si no hay datos vacio continuo
+            {
+                if(edicion) // Si estoy editando un proyecto
+                {
+                    nuevoProyecto.setNombre(nombreProyecto);
+                    proyectoDAO.actualizarProyecto(nuevoProyecto);
+                }
+                else // Estoy dando de alta un proyecto
+                {
+                    nuevoProyecto.setNombre(nombreProyecto);
+                    proyectoDAO.nuevoProyecto(nuevoProyecto);
+                }
                 setResult(RESULT_OK);
           }
           else
           {
               Toast.makeText(this.getBaseContext(),"Por favor, complete todos los datos.",Toast.LENGTH_LONG).show();
           }
-
-
+        }
+        catch(Exception e)
+        {
+            setResult(RESULT_CANCELED);
+        }
         finish();
     }
     private void accionBotonCancelar()

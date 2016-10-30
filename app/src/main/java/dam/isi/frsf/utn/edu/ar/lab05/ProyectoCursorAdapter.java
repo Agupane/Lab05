@@ -7,19 +7,15 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import java.util.concurrent.TimeUnit;
-
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.ProyectoException;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 
@@ -28,7 +24,7 @@ import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
  */
 public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClickListener{
     private LayoutInflater inflador;
-    private ProyectoDAO myDao;
+    private ProyectoDAO proyectoDao;
     private Context contexto;
     private Button btnEliminar,btnEditar;
     private String nombreProyectoSeleccionado;
@@ -36,7 +32,7 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
 
     public ProyectoCursorAdapter(Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
-        myDao= dao;
+        proyectoDao = dao;
         this.contexto = contexto;
     }
 
@@ -118,7 +114,12 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
     Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message inputMessage) {
-            ProyectoCursorAdapter.this.changeCursor(myDao.getCursorProyectos());
+            try {
+                ProyectoCursorAdapter.this.changeCursor(proyectoDao.getCursorProyectos());
+            }
+            catch(ProyectoException e){
+                ProyectoCursorAdapter.this.changeCursor(null);
+            }
         }
     };
     /**
@@ -126,10 +127,14 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
      */
     private void accionBotonEliminar(View v){
         final Integer idProyecto = (Integer) v.getTag();
-        myDao.borrarProyecto(idProyecto);
-        handlerRefresh.sendEmptyMessage(1);
-        Toast.makeText(contexto,"El proyecto se elimino exitosamente",Toast.LENGTH_LONG).show();
-
+        try {
+            proyectoDao.borrarProyecto(idProyecto);
+            handlerRefresh.sendEmptyMessage(1);
+            Toast.makeText(contexto,"El proyecto se elimino exitosamente",Toast.LENGTH_LONG).show();
+        }
+        catch(ProyectoException e){
+            Toast.makeText(contexto,"El proyecto no pudo ser eliminado",Toast.LENGTH_LONG).show();
+        }
     }
 
 }

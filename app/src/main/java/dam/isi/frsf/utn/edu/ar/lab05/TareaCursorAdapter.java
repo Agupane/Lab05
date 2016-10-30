@@ -1,14 +1,12 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,21 +22,22 @@ import java.util.concurrent.TimeUnit;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
 
 /**
  * Created by mdominguez on 06/10/16.
  */
 public class TareaCursorAdapter extends CursorAdapter implements View.OnClickListener{
     private LayoutInflater inflador;
-    private ProyectoDAO myDao;
+    private TareaDAO tareaDao;
     private Context contexto;
     private ToggleButton btnEstado;
     private Long tArranqueTrabajo,tFinalTrabajo,tiempoTrabajado;
     private Button btnEliminar,btnFinalizar,btnEditar;
     private Integer minutosTrabajados;
-    public TareaCursorAdapter (Context contexto, Cursor c, ProyectoDAO dao) {
+    public TareaCursorAdapter (Context contexto, Cursor c, TareaDAO dao) {
         super(contexto, c, false);
-        myDao= dao;
+        tareaDao = dao;
         this.contexto = contexto;
     }
 
@@ -139,7 +138,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             tiempoTrabajado=tFinalTrabajo-tArranqueTrabajo;
             minutosTrabajados = (int) (( TimeUnit.MILLISECONDS.toSeconds(tiempoTrabajado) )/5);
            // minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
-            myDao.ActualizarMinutosTrabajados(idTarea,minutosTrabajados);
+            tareaDao.ActualizarMinutosTrabajados(idTarea,minutosTrabajados);
             minutosTrabajados = null;
             tiempoTrabajado = null;
             tArranqueTrabajo = null;
@@ -172,7 +171,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             @Override
             public void run() {
                 Log.d("LAB05-MAIN","finalizar tarea : --- "+idTarea);
-                myDao.finalizar(idTarea);
+                tareaDao.finalizar(idTarea);
                 changeCursor(); // Con este mensaje se actualiza el cursor
 
             }
@@ -195,7 +194,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message inputMessage) {
-            TareaCursorAdapter.this.changeCursor(myDao.listaTareas(1));
+            TareaCursorAdapter.this.changeCursor(tareaDao.listaTareas(1));
         }
     };
     /**
@@ -203,7 +202,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
      */
     private void accionBotonEliminar(View v){
         final Integer idTarea= (Integer) v.getTag();
-        myDao.borrarTarea(idTarea);
+        tareaDao.borrarTarea(idTarea);
         handlerRefresh.sendEmptyMessage(1);
         Toast.makeText(contexto,"La tarea se elimino exitosamente",Toast.LENGTH_LONG).show();
     }

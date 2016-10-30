@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.UsuarioDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
@@ -25,6 +27,8 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     private Spinner spinnerListaUsuarios;
     private ArrayAdapter adapterListaUsuarios;
     private List<Usuario> listaUsuarios;
+    private TareaDAO tareaDAO;
+    private UsuarioDAO usuarioDAO;
     private ProyectoDAO proyectoDAO;
     private EjemploContactos ejemploContactos;
     private SeekBar sbPrioridad;
@@ -56,7 +60,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         if( (getIntent().getIntExtra("RESULT_CODE",2)) == 1) // Significa que soy una activity de editar
         {
             idTareaAEditar = (getIntent().getIntExtra("ID_TAREA",1));
-            tareaAEditar = proyectoDAO.getTarea(idTareaAEditar);
+            tareaAEditar = tareaDAO.getTarea(idTareaAEditar);
             if(tareaAEditar !=null) {
                 edicion=true;
                 etDescripcionTarea.setText(tareaAEditar.getDescripcion());
@@ -110,7 +114,9 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         btnCancelar = (Button) findViewById(R.id.btnCancelar);
         prioridad = new Prioridad();
         listaUsuarios = new ArrayList();
-        proyectoDAO = new ProyectoDAO(this);
+       // proyectoDAO = new ProyectoDAO(this);
+        usuarioDAO = new UsuarioDAO(this);
+        tareaDAO = new TareaDAO(this);
         ejemploContactos = new EjemploContactos();
 
     }
@@ -160,7 +166,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
             descripcionTarea = String.valueOf(etDescripcionTarea.getText());
             usuarioSeleccionado = (Usuario) spinnerListaUsuarios.getSelectedItem();
             proyectoSeleccionado = proyectoDAO.getProyecto(1);
-            prioridad = proyectoDAO.getPrioridad(intPrioridad);
+            prioridad = tareaDAO.getPrioridad(intPrioridad);
         }
         catch(Exception e)
         {
@@ -168,16 +174,16 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         }
          if(descripcionTarea!=null && !descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
           {
-              usuarioSeleccionado = proyectoDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA
+              usuarioSeleccionado = usuarioDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA
               nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
               if(edicion) // Si estoy editando una tarea
               {
                   nuevaTarea.setId(idTareaAEditar);
-                  proyectoDAO.actualizarTarea(nuevaTarea);
+                  tareaDAO.actualizarTarea(nuevaTarea);
               }
               else // Estoy dando de alta una tarea
               {
-                  proyectoDAO.nuevaTarea(nuevaTarea);
+                  tareaDAO.nuevaTarea(nuevaTarea);
 
               }
                 setResult(RESULT_OK);
