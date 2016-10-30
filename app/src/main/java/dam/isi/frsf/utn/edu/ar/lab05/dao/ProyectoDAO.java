@@ -42,9 +42,11 @@ public class ProyectoDAO {
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
     private ProyectoApiRest daoApiRest;
+
     public ProyectoDAO(Context c){
         this.dbHelper = new ProyectoOpenHelper(c);
         this.daoApiRest = new ProyectoApiRest();
+
     }
 
     public void open(){
@@ -349,6 +351,8 @@ public class ProyectoDAO {
 
         }
         return nuevoUsuario;
+        */
+        return null;
     }
 
     /**
@@ -368,10 +372,12 @@ public class ProyectoDAO {
             nuevoProyecto.setId(idProyecto);
             nuevoProyecto.setNombre(result.getString(0));
             result.close();
+
         }
         catch(Exception e)
         {
             System.out.println("Exploto la bd al buscar un proyecto");
+            nuevoProyecto = daoApiRest.buscarProyecto(idProyecto);
 
         }
         return nuevoProyecto;
@@ -388,6 +394,7 @@ public class ProyectoDAO {
         {
             open(true);
             db.delete(ProyectoDBMetadata.TABLA_PROYECTO,"_id=?", args);
+            daoApiRest.borrarProyecto(idProyecto);
         }
         catch(Exception e)
         {
@@ -402,10 +409,10 @@ public class ProyectoDAO {
         open(true);
         try {
             db.insert(ProyectoDBMetadata.TABLA_PROYECTO,null,datosAGuardar);
+            daoApiRest.crearProyecto(nuevoProyecto);
         }
         catch(Exception e)
         {
-
             System.out.println("BD Exploto en el insert de proyecto");
         }
     }
@@ -415,6 +422,7 @@ public class ProyectoDAO {
         open(true);
         try {
             db.update(ProyectoDBMetadata.TABLA_PROYECTO,datosAGuardar,ProyectoDBMetadata.TablaProyectoMetadata._ID+"="+p.getId(),null);
+            daoApiRest.actualizarProyecto(p);
         }
         catch(Exception e)
         {
