@@ -23,7 +23,7 @@ public class UsuarioDAO {
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
     private ProyectoApiRest daoApiRest;
-    private static boolean usarApiRest;
+    private static boolean usarApiRest = false;
     private Context context;
 
 
