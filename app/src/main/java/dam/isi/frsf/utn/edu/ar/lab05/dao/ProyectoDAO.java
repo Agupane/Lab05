@@ -37,16 +37,19 @@ public class ProyectoDAO {
             ProyectoDBMetadata.TABLA_TAREAS_ALIAS+"."+ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE+" = "+ProyectoDBMetadata.TABLA_USUARIOS_ALIAS+"."+ProyectoDBMetadata.TablaUsuariosMetadata._ID +" AND "+
             ProyectoDBMetadata.TABLA_TAREAS_ALIAS+"."+ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD+" = "+ProyectoDBMetadata.TABLA_PRIORIDAD_ALIAS+"."+ProyectoDBMetadata.TablaPrioridadMetadata._ID +" AND "+
             ProyectoDBMetadata.TABLA_TAREAS_ALIAS+"."+ProyectoDBMetadata.TablaTareasMetadata.PROYECTO+" = ?";
-
+    private static final int MODO_PERSISTENCIA_MIXTA = 2;  // Los datos se almacenan en la api rest y en local
+    private static final int MODO_PERSISTENCIA_LOCAL = 1;  // Los datos se almacenan solamente en la bdd local
+    private static final int MODO_PERSISTENCIA_REMOTA = 0; // Los datos se almacenan solamente en la nube
     private ProyectoOpenHelper dbHelper;
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
     private ProyectoApiRest daoApiRest;
+    private static boolean usarApiRest;
 
     public ProyectoDAO(Context c){
         this.dbHelper = new ProyectoOpenHelper(c);
         this.daoApiRest = new ProyectoApiRest();
-
+        usarApiRest=true;
     }
 
     public void open(){
@@ -351,8 +354,7 @@ public class ProyectoDAO {
 
         }
         return nuevoUsuario;
-        */
-        return null;
+
     }
 
     /**
@@ -363,22 +365,21 @@ public class ProyectoDAO {
     public Proyecto getProyecto(int idProyecto)
     {
         Proyecto nuevoProyecto = null;
-        try
-        {
-            open(false);
-            Cursor result = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM "+ProyectoDBMetadata.TABLA_PROYECTO+" WHERE "+ProyectoDBMetadata.TablaProyectoMetadata._ID+" = "+idProyecto,null);
-            result.moveToFirst();
-            nuevoProyecto = new Proyecto();
-            nuevoProyecto.setId(idProyecto);
-            nuevoProyecto.setNombre(result.getString(0));
-            result.close();
-
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exploto la bd al buscar un proyecto");
+        if(usarApiRest){
             nuevoProyecto = daoApiRest.buscarProyecto(idProyecto);
-
+        }
+        else {
+            try {
+                open(false);
+                Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM " + ProyectoDBMetadata.TABLA_PROYECTO + " WHERE " + ProyectoDBMetadata.TablaProyectoMetadata._ID + " = " + idProyecto, null);
+                result.moveToFirst();
+                nuevoProyecto = new Proyecto();
+                nuevoProyecto.setId(idProyecto);
+                nuevoProyecto.setNombre(result.getString(0));
+                result.close();
+            } catch (Exception e) {
+                System.out.println("Exploto la bd al buscar un proyecto");
+            }
         }
         return nuevoProyecto;
     }
@@ -389,83 +390,112 @@ public class ProyectoDAO {
      */
     public void borrarProyecto(int idProyecto)
     {
-        String[] args = { String.valueOf(idProyecto) };
-        try
-        {
-            open(true);
-            db.delete(ProyectoDBMetadata.TABLA_PROYECTO,"_id=?", args);
+        if(usarApiRest){
             daoApiRest.borrarProyecto(idProyecto);
         }
-        catch(Exception e)
-        {
-            System.out.println(e.getMessage());
-            System.out.println("Bd exploto al eliminar proyecto");
+        else{
+            String[] args = { String.valueOf(idProyecto) };
+            try
+            {
+                open(true);
+                db.delete(ProyectoDBMetadata.TABLA_PROYECTO,"_id=?", args);
+                daoApiRest.borrarProyecto(idProyecto);
+            }
+            catch(Exception e)
+            {
+                System.out.println(e.getMessage());
+                System.out.println("Bd exploto al eliminar proyecto");
+            }
         }
     }
     public void nuevoProyecto(Proyecto nuevoProyecto)
     {
-        ContentValues datosAGuardar = new ContentValues();
-        datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO,nuevoProyecto.getNombre());
-        open(true);
-        try {
-            db.insert(ProyectoDBMetadata.TABLA_PROYECTO,null,datosAGuardar);
+        if(usarApiRest){
             daoApiRest.crearProyecto(nuevoProyecto);
         }
-        catch(Exception e)
-        {
-            System.out.println("BD Exploto en el insert de proyecto");
-        }
-    }
-    public void actualizarProyecto(Proyecto p){
-        ContentValues datosAGuardar = new ContentValues();
-        datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO,p.getNombre());
-        open(true);
-        try {
-            db.update(ProyectoDBMetadata.TABLA_PROYECTO,datosAGuardar,ProyectoDBMetadata.TablaProyectoMetadata._ID+"="+p.getId(),null);
-            daoApiRest.actualizarProyecto(p);
-        }
-        catch(Exception e)
-        {
-            System.out.println("BD Exploto al actualizar proyecto");
-        }
-    }
-    public List<Proyecto> listarProyectos() {
-        Proyecto nuevoProyecto;
-        List<Proyecto> listaProyectos = new ArrayList<>();
-        try {
-            open(false);
-            Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaProyectoMetadata._ID + "," + ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM " + ProyectoDBMetadata.TABLA_PROYECTO, null);
-            while (result.moveToNext()) {
-                // Primer parameto el id, segundo el nombre y tercero el email
-                nuevoProyecto = new Proyecto(result.getInt(0), result.getString(1));
-                listaProyectos.add(nuevoProyecto);
+        else{
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO,nuevoProyecto.getNombre());
+            open(true);
+            try {
+                db.insert(ProyectoDBMetadata.TABLA_PROYECTO,null,datosAGuardar);
             }
-            result.close();
-        } catch (Exception e) {
-            System.out.println("Exploto la bd al listar proyectos");
-        } finally {
-            return listaProyectos;
+            catch(Exception e)
+            {
+                System.out.println("BD Exploto en el insert de proyecto");
+            }
         }
-    }
-    public Cursor getCursorProyectos(){
-            Cursor cursorPry = null;
-            cursorPry = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID+ " AS _id "+", "+ProyectoDBMetadata.TablaProyectoMetadata.TITULO +" FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
-      //      cursorPry.moveToFirst();
-          //  System.out.println("ID :"+cursorPry.getInt(0));
-            //System.out.println("ID :"+cursorPry.getInt(0)+" Nombre "+cursorPry.getString(1));
-            return cursorPry;
     }
 
+    public void actualizarProyecto(Proyecto p){
+        if(usarApiRest){
+            daoApiRest.actualizarProyecto(p);
+        }
+        else {
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO, p.getNombre());
+            open(true);
+            try {
+                db.update(ProyectoDBMetadata.TABLA_PROYECTO, datosAGuardar, ProyectoDBMetadata.TablaProyectoMetadata._ID + "=" + p.getId(), null);
+            } catch (Exception e) {
+                System.out.println("BD Exploto al actualizar proyecto");
+            }
+        }
+}
+
+    /**
+     * Devuelve una lista con todos los proyectos, null si no encuentra proyectos
+     * @return
+     */
+    public List<Proyecto> listarProyectos() {
+        Proyecto nuevoProyecto;
+        List<Proyecto> listaProyectos = null;
+        if(usarApiRest){
+            listaProyectos = daoApiRest.listarProyectos();
+        }
+        else{
+            try {
+                listaProyectos = new ArrayList<>();
+                open(false);
+                Cursor result = db.rawQuery("SELECT " + ProyectoDBMetadata.TablaProyectoMetadata._ID + "," + ProyectoDBMetadata.TablaProyectoMetadata.TITULO + " FROM " + ProyectoDBMetadata.TABLA_PROYECTO, null);
+                while (result.moveToNext()) {
+                    // Primer parameto el id, segundo el nombre y tercero el email
+                    nuevoProyecto = new Proyecto(result.getInt(0), result.getString(1));
+                    listaProyectos.add(nuevoProyecto);
+                }
+                result.close();
+            }
+            catch (Exception e) {
+                System.out.println("Exploto la bd al listar proyectos");
+            }
+            finally {
+                return listaProyectos;
+            }
+        }
+        return listaProyectos;
+    }
+
+    /**
+     * Deuvuelve un cursor con todos lo proyectos
+     * @return
+     */
+    public Cursor getCursorProyectos(){
+            Cursor cursorPry = null;
+            if(usarApiRest){ // busco los proyectos en la nube
+                cursorPry = daoApiRest.getCursorProyectos();
+            }
+        else{ // Saco los proyectos de la bd local
+                cursorPry = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID+ " AS _id "+", "+ProyectoDBMetadata.TablaProyectoMetadata.TITULO +" FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
+            }
+            return cursorPry;
+    }
 
     public void ActualizarMinutosTrabajados(Integer idTarea, int minutosTrabajados)
     {
         ContentValues valores = new ContentValues();
-        int filasModificadas=0;
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,minutosTrabajados);
         try {
             open(true);
-
-            //filasModificadas = db.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_ID="+idTarea, null);
             db.execSQL("UPDATE " + ProyectoDBMetadata.TABLA_TAREAS + " SET MINUTOS_TRABAJDOS = MINUTOS_TRABAJDOS + "+minutosTrabajados+" WHERE _ID = "+idTarea);
         }
         catch (Exception e)
@@ -475,4 +505,11 @@ public class ProyectoDAO {
         }
     }
 
+    /**
+     * Desactiva o activa la busqueda de datos en la base de datos local
+     * @param usarApiRest
+     */
+    public void buscarEnLaNube(boolean usarApiRest){
+        this.usarApiRest=usarApiRest;
+    }
 }

@@ -1,6 +1,7 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.database.CursorJoiner;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -37,10 +38,16 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     private Proyecto proyectoSeleccionado;
     private Integer idTareaAEditar;
     private boolean edicion;
+    private EjemploPermisos gestorPermisos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
+        if (android.os.Build.VERSION.SDK_INT > 9) // PERMITE ABRIR CONEXION A INTERNET
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         cargarComponentes();
          //listaUsuarios=proyectoDAO.listarUsuarios();
         listaUsuarios = ejemploContactos.listarContactos(this); // Obtiene los contactos de la lista de contactos
@@ -68,6 +75,9 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
 
         btnCancelar.setOnClickListener(this);
         btnGuardar.setOnClickListener(this);
+
+        gestorPermisos = new EjemploPermisos();
+        gestorPermisos.askForInternetPermission(this);
     }
 
     /**
@@ -158,9 +168,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         }
          if(descripcionTarea!=null && !descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
           {
-              if(usuarioSeleccionado == null){System.out.println("USUARIO NULO");}
               usuarioSeleccionado = proyectoDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA
-              if(usuarioSeleccionado == null){System.out.println("USUARIO NULO 2");}
               nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
               if(edicion) // Si estoy editando una tarea
               {

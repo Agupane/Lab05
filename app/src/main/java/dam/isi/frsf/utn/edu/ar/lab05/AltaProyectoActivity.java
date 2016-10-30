@@ -3,20 +3,12 @@ package dam.isi.frsf.utn.edu.ar.lab05;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
-import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
-import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class AltaProyectoActivity extends AppCompatActivity implements Button.OnClickListener{
@@ -24,30 +16,29 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
     private String nombreProyecto;
     private Button btnCrearProyecto;
     private Usuario usuarioSeleccionado;
-    private Proyecto proyectoAEditar;
+    private Proyecto nuevoProyecto;
     private Integer idProyectoAEditar;
     private ProyectoDAO proyectoDAO;
     private boolean edicion; // Indica si estoy editando un proyecto o si estoy creandolo
+    private static final int ID_PROYECTO_DEFAULT = -1; // SINO ENCONTRO UN ID DE PROYECTO ENTONCES ESTE ES EL VALOR DEFAULT
+    private static final int ID_RESULT_CODE_DEFAULT =-1; // ID DEFAULT EN EL CASO DE QUE NO SE ENCUENTREN DATOS DEL INTENT
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_proyecto);
         cargarComponentes();
-
         edicion = false;
+        nuevoProyecto = new Proyecto();
+        nuevoProyecto.setNombre( getIntent().getStringExtra("NOMBRE_PROYECTO") );
 
-
-        if( (getIntent().getIntExtra("RESULT_CODE",2)) == 1) // Significa que soy una activity de editar
+        if( (getIntent().getIntExtra("RESULT_CODE",ID_RESULT_CODE_DEFAULT)) == 1) // Significa que soy una activity de editar
         {
-            btnCrearProyecto.setText("Editar proyecto");
-            idProyectoAEditar = (getIntent().getIntExtra("ID_PROYECTO",1));
-            proyectoAEditar = proyectoDAO.getProyecto(idProyectoAEditar);
-            if(proyectoAEditar !=null) {
-                edicion=true;
-                etNombreProyecto.setText(proyectoAEditar.getNombre());
-            }
+            btnCrearProyecto.setText("Editar proyecto"); // Por default el boton se llama "Crear proyecto"
+            idProyectoAEditar = (getIntent().getIntExtra("ID_PROYECTO",ID_PROYECTO_DEFAULT));
+            nuevoProyecto.setId(idProyectoAEditar);
+            edicion=true;
+            etNombreProyecto.setText(nuevoProyecto.getNombre());
         }
-
 
         btnCrearProyecto.setOnClickListener(this);
     }
@@ -81,7 +72,6 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
     {
         try {
             nombreProyecto = String.valueOf(etNombreProyecto.getText());
-
         }
         catch(Exception e)
         {
@@ -89,15 +79,13 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
         }
          if(!nombreProyecto.isEmpty()) // Si no hay datos vacio continuo
           {
-              Proyecto nuevoProyecto;
-              nuevoProyecto = new Proyecto(nombreProyecto);
               if(edicion) // Si estoy editando un proyecto
               {
-                  nuevoProyecto.setId(idProyectoAEditar);
                   proyectoDAO.actualizarProyecto(nuevoProyecto);
               }
               else // Estoy dando de alta un proyecto
               {
+                  nuevoProyecto.setNombre(nombreProyecto);
                   proyectoDAO.nuevoProyecto(nuevoProyecto);
               }
                 setResult(RESULT_OK);

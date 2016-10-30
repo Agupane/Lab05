@@ -3,6 +3,7 @@ package dam.isi.frsf.utn.edu.ar.lab05;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -30,18 +31,13 @@ public class ListarProyectosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar_proyectos);
+        if (android.os.Build.VERSION.SDK_INT > 9) // PERMITE ABRIR CONEXION A INTERNET
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         lvProyectos = (ListView) findViewById(R.id.lvProyecto);
         lvProyectos.setClickable(true);
-        //TODO BORRAR ESTO
-        /*
-        Proyecto p = new Proyecto(1,"nacionalYPopular");
-        proyectoDAO = new ProyectoDAO(this);
-        listaProyectos = new ArrayList<Proyecto>();
-        listaProyectos.add(p);
-        listaProyectosAdapter = new ProyectosBuscadosAdapter(ListarProyectosActivity.this, listaProyectos);
-        lvProyectos.setAdapter(listaProyectosAdapter);
-        */
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,27 +67,19 @@ public class ListarProyectosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-      //  Log.d("LAB05-MAIN","en resume");
         proyectoDAO = new ProyectoDAO(ListarProyectosActivity.this);
         proyectoDAO.open();
         cursor = proyectoDAO.getCursorProyectos();
-
-        Log.d("LAB05-MAIN","Cant proyectos: "+cursor.getCount());
-
         pca = new ProyectoCursorAdapter(ListarProyectosActivity.this,cursor,proyectoDAO);
-
         lvProyectos.setAdapter(pca);
-   //     Log.d("LAB05-MAIN","fin resume");
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-       // Log.d("LAB05-MAIN","on pausa");
-
         if(cursor!=null) cursor.close();
         if(proyectoDAO!=null) proyectoDAO.close();
-     //   Log.d("LAB05-MAIN","fin on pausa");
 
     }
     protected void onActivityResult(int requestCode,int resultCode,Intent data)

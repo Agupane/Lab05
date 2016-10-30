@@ -31,6 +31,8 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
     private ProyectoDAO myDao;
     private Context contexto;
     private Button btnEliminar,btnEditar;
+    private String nombreProyectoSeleccionado;
+    private int idProyectoSeleccionado;
 
     public ProyectoCursorAdapter(Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
@@ -58,7 +60,8 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
         btnEditar = (Button)   view.findViewById(R.id.proyectoBtnEditar);
         btnEliminar = (Button) view.findViewById(R.id.proyectoBtnEliminar);
 
-        nombreProyecto.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaProyectoMetadata.TITULO)));
+        nombreProyectoSeleccionado = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaProyectoMetadata.TITULO));
+        nombreProyecto.setText(nombreProyectoSeleccionado);
 
         btnEliminar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEliminar.setOnClickListener(this);
@@ -96,6 +99,7 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
         final Integer idProyecto= (Integer) view.getTag();
         Intent intEditarAct = new Intent(contexto,AltaProyectoActivity.class);
         intEditarAct.putExtra("ID_PROYECTO",idProyecto);
+        intEditarAct.putExtra("NOMBRE_PROYECTO",nombreProyectoSeleccionado);
         intEditarAct.putExtra("RESULT_CODE",1);
         ((Activity) contexto).startActivityForResult(intEditarAct,1);
     }
