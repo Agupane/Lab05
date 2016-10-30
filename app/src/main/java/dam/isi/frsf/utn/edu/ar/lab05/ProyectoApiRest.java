@@ -56,7 +56,7 @@ public class ProyectoApiRest {
         try {
             jsonNuevoProyecto.put("id",p.getId());
             jsonNuevoProyecto.put("nombre",p.getNombre());
-            cliRest.actualizar(jsonNuevoProyecto,"proyectos");
+            cliRest.actualizar(jsonNuevoProyecto,"proyectos/"+p.getId());
         }
         catch (JSONException e) {
             e.printStackTrace();

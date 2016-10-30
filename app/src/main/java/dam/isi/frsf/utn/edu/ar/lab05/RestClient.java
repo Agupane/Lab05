@@ -187,7 +187,6 @@ public class RestClient {
                 Log.d("HTTP-Connection","Respuesta a solicitud "+tipoDeRequest+": "+urlConnection.getResponseMessage());
             }
             catch(IOException e){
-                System.out.println("exploto al actualizar proyecto remoto");
                 e.printStackTrace();
             }
             finally{

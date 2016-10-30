@@ -29,7 +29,6 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
         cargarComponentes();
         edicion = false;
         nuevoProyecto = new Proyecto();
-        nuevoProyecto.setNombre( getIntent().getStringExtra("NOMBRE_PROYECTO") );
 
         if( (getIntent().getIntExtra("RESULT_CODE",ID_RESULT_CODE_DEFAULT)) == 1) // Significa que soy una activity de editar
         {
@@ -37,7 +36,7 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
             idProyectoAEditar = (getIntent().getIntExtra("ID_PROYECTO",ID_PROYECTO_DEFAULT));
             nuevoProyecto.setId(idProyectoAEditar);
             edicion=true;
-            etNombreProyecto.setText(nuevoProyecto.getNombre());
+            etNombreProyecto.setText(getIntent().getStringExtra("NOMBRE_PROYECTO"));
         }
 
         btnCrearProyecto.setOnClickListener(this);
@@ -81,6 +80,7 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
           {
               if(edicion) // Si estoy editando un proyecto
               {
+                  nuevoProyecto.setNombre(nombreProyecto);
                   proyectoDAO.actualizarProyecto(nuevoProyecto);
               }
               else // Estoy dando de alta un proyecto
