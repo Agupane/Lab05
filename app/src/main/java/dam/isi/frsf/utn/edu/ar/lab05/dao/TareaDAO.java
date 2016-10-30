@@ -271,12 +271,15 @@ public class TareaDAO {
 
     public Cursor listaTareas(Integer idProyecto){
         Cursor cursorPry = db.rawQuery("SELECT "+ProyectoDBMetadata.TablaProyectoMetadata._ID+ " FROM "+ProyectoDBMetadata.TABLA_PROYECTO,null);
-        Integer idPry= 0;
+      //  Integer idPry= 0;
+        Integer idPry=idProyecto;
+        /*
         if(cursorPry.moveToFirst()){
             idPry=cursorPry.getInt(0);
         }
+        */
         Cursor cursor = null;
-        Log.d("LAB05-MAIN","PROYECTO : _"+idPry.toString()+" - "+ _SQL_TAREAS_X_PROYECTO);
+        Log.d("Listar Tareas","PROYECTO ID: "+idPry.toString()+" - "+ _SQL_TAREAS_X_PROYECTO);
         cursor = db.rawQuery(_SQL_TAREAS_X_PROYECTO,new String[]{idPry.toString()});
         return cursor;
     }

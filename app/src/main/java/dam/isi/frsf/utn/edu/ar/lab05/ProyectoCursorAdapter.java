@@ -26,7 +26,7 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
     private LayoutInflater inflador;
     private ProyectoDAO proyectoDao;
     private Context contexto;
-    private Button btnEliminar,btnEditar;
+    private Button btnEliminar,btnEditar,btnVerTareas;
     private String nombreProyectoSeleccionado;
     private int idProyectoSeleccionado;
 
@@ -55,6 +55,7 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
 
         btnEditar = (Button)   view.findViewById(R.id.proyectoBtnEditar);
         btnEliminar = (Button) view.findViewById(R.id.proyectoBtnEliminar);
+        btnVerTareas = (Button) view.findViewById(R.id.proyectoBtnVerTareas);
 
         nombreProyectoSeleccionado = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaProyectoMetadata.TITULO));
         nombreProyecto.setText(nombreProyectoSeleccionado);
@@ -65,6 +66,8 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
         btnEditar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEditar.setOnClickListener(this);
 
+        btnVerTareas.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+        btnVerTareas.setOnClickListener(this);
     }
 
     @Override
@@ -81,6 +84,10 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
             case R.id.proyectoBtnEliminar:
             {
                 accionBotonEliminar(v);
+                break;
+            }
+            case R.id.proyectoBtnVerTareas:{
+                accionBotonVerTareas(v);
                 break;
             }
         }
@@ -135,6 +142,18 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
         catch(ProyectoException e){
             Toast.makeText(contexto,"El proyecto no pudo ser eliminado",Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Accion que se ejecuta cuando se presiona el boton ver taras
+     * TODO TERMINAR
+     * @param v
+     */
+    private void accionBotonVerTareas(View v){
+        final Integer idProyecto = (Integer) v.getTag();
+        Intent intListarTareas = new Intent(contexto,ListarTareasProyecto.class);
+        intListarTareas.putExtra("ID_PROYECTO", idProyecto);
+        ((Activity) contexto).startActivityForResult(intListarTareas,0);
     }
 
 }

@@ -29,6 +29,13 @@
         >
 
         <Button
+            android:text="@string/btnTextVerTareas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/proyectoBtnVerTareas"
+            android:layout_weight="1.0" />
+
+        <Button
             android:id="@+id/proyectoBtnEditar"
             android:text="@string/editar"
             android:layout_width="wrap_content"

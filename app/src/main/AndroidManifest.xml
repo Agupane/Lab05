@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ListarProyectosActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,7 +24,10 @@
         <activity android:name=".AltaTareaActivity" />
         <activity android:name=".BuscarTareasActivity" />
         <activity android:name=".ListarTareasBuscadasActivity"></activity>
+        <!--
         <activity android:name=".ListarProyectosActivity"></activity>
+        -->
+        <activity android:name=".ListarTareasProyecto"></activity>
         <activity android:name=".AltaProyectoActivity"></activity>
     </application>
 
