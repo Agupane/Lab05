@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.UsuarioException;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 /**
@@ -18,7 +19,7 @@ public class UsuarioDAO {
     private static final int MODO_PERSISTENCIA_MIXTA = 2;  // Los datos se almacenan en la api rest y en local
     private static final int MODO_PERSISTENCIA_LOCAL = 1;  // Los datos se almacenan solamente en la bdd local
     private static final int MODO_PERSISTENCIA_REMOTA = 0; // Los datos se almacenan solamente en la nube
-    private static int MODO_PERSISTENCIA_CONFIGURADA; // Como default es remota
+    private static int MODO_PERSISTENCIA_CONFIGURADA; // Como default es remota y local
     private ProyectoOpenHelper dbHelper;
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
@@ -28,7 +29,7 @@ public class UsuarioDAO {
 
 
     public UsuarioDAO(Context c) {
-        MODO_PERSISTENCIA_CONFIGURADA = MODO_PERSISTENCIA_REMOTA;
+        MODO_PERSISTENCIA_CONFIGURADA = MODO_PERSISTENCIA_MIXTA;
         this.context=c;
         this.dbHelper = new ProyectoOpenHelper(c);
         this.daoApiRest = new ProyectoApiRest();
@@ -56,8 +57,37 @@ public class UsuarioDAO {
      * Devuelve el usuario pasado por parametro pero actualizado con el ID (si este no existia)
      * @param nuevoUsuario
      */
-    public Usuario guardarUsuario(Usuario nuevoUsuario)
-    {
+    public Usuario guardarUsuario(Usuario nuevoUsuario) throws UsuarioException {
+        Usuario usuarioActualizado = nuevoUsuario;
+        switch (MODO_PERSISTENCIA_CONFIGURADA) {
+            case MODO_PERSISTENCIA_LOCAL: {
+                usuarioActualizado = guardarUsuarioLocal(nuevoUsuario);
+                break;
+            }
+            case MODO_PERSISTENCIA_REMOTA: {
+                usuarioActualizado = guardarUsuarioRemoto(nuevoUsuario);
+                break;
+            }
+            case MODO_PERSISTENCIA_MIXTA: {
+                usuarioActualizado = guardarUsuarioLocal(nuevoUsuario);
+                usuarioActualizado = guardarUsuarioRemoto(nuevoUsuario);
+                break;
+            }
+            default: {
+                throw new UsuarioException("Se produjo un error al persistir el usuario");
+            }
+        }
+        return usuarioActualizado;
+    }
+
+    /**
+     * Almacena el usuario en la bd local y devuelve el usuario con su id
+     * Si el usuario existia devuelve el mismo usuario y no hace nada
+     * Si se produce un error lanza una exception
+     * @param nuevoUsuario
+     * @return
+     */
+    private Usuario guardarUsuarioLocal(Usuario nuevoUsuario) throws UsuarioException {
         if(getUsuario(nuevoUsuario.getId())==null) {
             ContentValues datosAGuardar = new ContentValues();
             datosAGuardar.put(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL, nuevoUsuario.getCorreoElectronico());
@@ -67,12 +97,16 @@ public class UsuarioDAO {
                 long idFilaNuevoUsuario;
                 idFilaNuevoUsuario = db.insert(ProyectoDBMetadata.TABLA_USUARIOS, null, datosAGuardar);
                 nuevoUsuario.setId((int) idFilaNuevoUsuario);
-                daoApiRest.guardarUsuario(nuevoUsuario);
             }
             catch (Exception e) {
-                System.out.println("BD Exploto en el insert de usuario");
+                throw new UsuarioException("Se produjo un error al persistir el usuario");
             }
         }
+        return nuevoUsuario;
+    }
+
+    private Usuario guardarUsuarioRemoto(Usuario nuevoUsuario) throws UsuarioException {
+        daoApiRest.guardarUsuario(nuevoUsuario);
         return nuevoUsuario;
     }
 

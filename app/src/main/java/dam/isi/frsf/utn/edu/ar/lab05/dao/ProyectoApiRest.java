@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.Exception.ProyectoException;
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.RestException;
 import dam.isi.frsf.utn.edu.ar.lab05.Exception.UsuarioException;
 import dam.isi.frsf.utn.edu.ar.lab05.RestClient;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
@@ -129,12 +130,15 @@ public class ProyectoApiRest {
      */
     public Proyecto buscarProyecto(Integer id) throws ProyectoException {
         RestClient cliRest = new RestClient();
-        JSONObject t = cliRest.getById(1,"proyectos");
         Proyecto proyecto =null;
         try {
+            JSONObject t = cliRest.getById(1,"proyectos");
             proyecto = new Proyecto(t.getInt("id"),t.getString("nombre"));
         }
         catch (JSONException e) {
+            throw new ProyectoException("El proyecto no pudo ser encontrado");
+        }
+        catch(RestException e){
             throw new ProyectoException("El proyecto no pudo ser encontrado");
         }
         return proyecto;
@@ -142,6 +146,7 @@ public class ProyectoApiRest {
 
     /**
      * Guarda el usuario guardado por parametro en la nube
+     * Si el usuario ya existia no hace nada
      * @param nuevoUsuario
      */
     public void guardarUsuario (Usuario nuevoUsuario) throws UsuarioException {
@@ -154,6 +159,9 @@ public class ProyectoApiRest {
             cliRest.crear(jsonNuevoUsuario,"usuarios");
         }
         catch (JSONException e) {
+            throw new UsuarioException("El usuario no pudo ser guardado");
+        }
+        catch(RestException e){
             throw new UsuarioException("El usuario no pudo ser guardado");
         }
     }

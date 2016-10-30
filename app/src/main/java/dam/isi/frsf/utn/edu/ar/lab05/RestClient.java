@@ -15,6 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.RestException;
+
 /**
  * Created by Agustin on 10/20/2016.
  */
@@ -32,7 +34,7 @@ public class RestClient {
      * @param path path donde se encuentra el objeto a buscar
      * @return
      */
-    public JSONObject getById(Integer id,String path) {
+    public JSONObject getById(Integer id,String path) throws RestException {
         JSONObject resultado = null;
         HttpURLConnection urlConnection=null;
         try {
@@ -54,10 +56,14 @@ public class RestClient {
         }
         catch (IOException e) {
             Log.e("TEST-ARR",e.getMessage(),e);
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
+            throw new RestException(e.getMessage());
+            //e.printStackTrace();
+        }
+        catch (JSONException e) {
+            throw new RestException(e.getMessage());
+            //e.printStackTrace();
+        }
+        finally {
             if(urlConnection!=null) urlConnection.disconnect();
         }
         return resultado;
@@ -68,7 +74,7 @@ public class RestClient {
      * @param path path donde se encuentran los objetos a buscar
      * @return
      */
-    public JSONArray getByAll(String path) {
+    public JSONArray getByAll(String path) throws RestException {
         JSONArray resultado = null;
         HttpURLConnection urlConnection=null;
         try {
@@ -90,10 +96,12 @@ public class RestClient {
         }
         catch (IOException e) {
             Log.e("TEST-ARR",e.getMessage(),e);
-            e.printStackTrace();
+            throw new RestException(e.getMessage());
+           // e.printStackTrace();
         }
         catch (JSONException e) {
-            e.printStackTrace();
+            throw new RestException(e.getMessage());
+           // e.printStackTrace();
         }
         finally {
             if(urlConnection!=null) urlConnection.disconnect();
@@ -106,7 +114,7 @@ public class RestClient {
      * @param objeto objeto json a crear
      * @param path path donde se encuentra el objeto
      */
-    public void crear(JSONObject objeto,String path) {
+    public void crear(JSONObject objeto,String path) throws RestException {
         try{
             String str= objeto.toString();
             byte[] data=str.getBytes("UTF-8");
@@ -114,10 +122,12 @@ public class RestClient {
             crearHttpConnectionParaCrearOActualizar(data,"POST",path);
         }
         catch(MalformedURLException e){
-            e.printStackTrace();
+           // e.printStackTrace();
+            throw new RestException(e.getMessage());
         }
         catch(IOException e){
-            e.printStackTrace();
+          //  e.printStackTrace();
+            throw new RestException(e.getMessage());
         }
     }
     /**
@@ -125,7 +135,7 @@ public class RestClient {
      * @param objeto
      * @param path
      */
-    public void actualizar(JSONObject objeto, String path) {
+    public void actualizar(JSONObject objeto, String path) throws RestException {
         try {
             String str = objeto.toString();
             byte[] data = str.getBytes("UTF-8");
@@ -133,10 +143,12 @@ public class RestClient {
             crearHttpConnectionParaCrearOActualizar(data, "PUT", path);
         }
         catch(MalformedURLException e){
-            e.printStackTrace();
+          //  e.printStackTrace();
+            throw new RestException(e.getMessage());
         }
         catch(IOException e){
-            e.printStackTrace();
+         //   e.printStackTrace();
+            throw new RestException(e.getMessage());
         }
     }
 
@@ -145,17 +157,19 @@ public class RestClient {
      * @param id id del objeto a borrar
      * @param path path en donde se encuentra el objeto
      */
-    public void borrar(Integer id,String path) {
+    public void borrar(Integer id,String path) throws RestException {
         try {
             path=path+"/"+id;
             Log.d("Borrando objeto", "id: "+id+" path:"+path);
             crearHttpConnectionParaBusquedaOEliminacion("DELETE", path);
         }
         catch(MalformedURLException e){
-            e.printStackTrace();
+       //     e.printStackTrace();
+            throw new RestException(e.getMessage());
         }
         catch(IOException e){
-            e.printStackTrace();
+        //    e.printStackTrace();
+            throw new RestException(e.getMessage());
         }
     }
 
