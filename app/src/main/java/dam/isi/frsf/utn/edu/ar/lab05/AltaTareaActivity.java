@@ -114,11 +114,10 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         btnCancelar = (Button) findViewById(R.id.btnCancelar);
         prioridad = new Prioridad();
         listaUsuarios = new ArrayList();
-       // proyectoDAO = new ProyectoDAO(this);
+        proyectoDAO = new ProyectoDAO(this);
         usuarioDAO = new UsuarioDAO(this);
         tareaDAO = new TareaDAO(this);
         ejemploContactos = new EjemploContactos();
-
     }
 
     @Override
@@ -167,34 +166,35 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
             usuarioSeleccionado = (Usuario) spinnerListaUsuarios.getSelectedItem();
             proyectoSeleccionado = proyectoDAO.getProyecto(1);
             prioridad = tareaDAO.getPrioridad(intPrioridad);
+
+            if(descripcionTarea!=null && !descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
+            {
+                usuarioSeleccionado = usuarioDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA
+                nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
+                if(edicion) // Si estoy editando una tarea
+                {
+                    nuevaTarea.setId(idTareaAEditar);
+                    tareaDAO.actualizarTarea(nuevaTarea);
+                }
+                else // Estoy dando de alta una tarea
+                {
+                    tareaDAO.nuevaTarea(nuevaTarea);
+                }
+                setResult(RESULT_OK);
+            }
+            else
+            {
+                Toast.makeText(this.getBaseContext(),"Por favor, complete todos los datos.",Toast.LENGTH_LONG).show();
+            }
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             setResult(RESULT_CANCELED);
         }
-         if(descripcionTarea!=null && !descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
-          {
-              usuarioSeleccionado = usuarioDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA
-              nuevaTarea = new Tarea(false,horasEstimadas,0,false,proyectoSeleccionado,prioridad,usuarioSeleccionado,descripcionTarea);
-              if(edicion) // Si estoy editando una tarea
-              {
-                  nuevaTarea.setId(idTareaAEditar);
-                  tareaDAO.actualizarTarea(nuevaTarea);
-              }
-              else // Estoy dando de alta una tarea
-              {
-                  tareaDAO.nuevaTarea(nuevaTarea);
-
-              }
-                setResult(RESULT_OK);
-          }
-          else
-          {
-              Toast.makeText(this.getBaseContext(),"Por favor, complete todos los datos.",Toast.LENGTH_LONG).show();
-          }
-
-
-        finish();
+        finally{
+            finish();
+        }
     }
     private void accionBotonCancelar()
     {

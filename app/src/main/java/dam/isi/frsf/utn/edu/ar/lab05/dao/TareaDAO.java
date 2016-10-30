@@ -9,7 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import dam.isi.frsf.utn.edu.ar.lab05.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;

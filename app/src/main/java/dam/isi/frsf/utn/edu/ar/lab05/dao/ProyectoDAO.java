@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.Exception.ProyectoException;
-import dam.isi.frsf.utn.edu.ar.lab05.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
