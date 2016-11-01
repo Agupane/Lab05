@@ -19,16 +19,22 @@ public class ProyectoDAO {
     private static final int MODO_PERSISTENCIA_MIXTA = 2;  // Los datos se almacenan en la api rest y en local
     private static final int MODO_PERSISTENCIA_LOCAL = 1;  // Los datos se almacenan solamente en la bdd local
     private static final int MODO_PERSISTENCIA_REMOTA = 0; // Los datos se almacenan solamente en la nube
-    private ProyectoOpenHelper dbHelper;
+    private static ProyectoOpenHelper dbHelper;
+    private final static ProyectoApiRest daoApiRest = ProyectoApiRest.getInstance();
+    private static boolean usarApiRest;
+    private static ProyectoDAO ourInstance = new ProyectoDAO();
+    private static Context context;
+
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
-    private ProyectoApiRest daoApiRest;
-    private static boolean usarApiRest;
 
-    public ProyectoDAO(Context c){
-        this.dbHelper = new ProyectoOpenHelper(c);
-        this.daoApiRest = new ProyectoApiRest();
+    private ProyectoDAO(){
+
+    }
+
+    public static ProyectoDAO getInstance(){
         usarApiRest=true;
+        return ourInstance;
     }
 
     public void open(){
@@ -36,6 +42,7 @@ public class ProyectoDAO {
     }
 
     public void open(Boolean toWrite){
+        if(dbHelper==null){dbHelper = new ProyectoOpenHelper(context);}
         if(toWrite) {
             db = dbHelper.getWritableDatabase();
         }
@@ -185,5 +192,10 @@ public class ProyectoDAO {
      */
     public void buscarEnLaNube(boolean usarApiRest){
         this.usarApiRest=usarApiRest;
+    }
+
+    public void setContext(Context c){
+        this.context=c;
+        dbHelper = new ProyectoOpenHelper(c);
     }
 }

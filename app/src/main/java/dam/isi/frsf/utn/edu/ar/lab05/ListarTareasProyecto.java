@@ -41,6 +41,7 @@ public class ListarTareasProyecto extends AppCompatActivity {
                 ejemploPermisos.askForContactPermission(ListarTareasProyecto.this);
                 Intent intActAlta= new Intent(ListarTareasProyecto.this,AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
+                intActAlta.putExtra("ID_PROYECTO",idProyecto);
                 startActivityForResult(intActAlta,0);
             }
         });
@@ -101,7 +102,7 @@ public class ListarTareasProyecto extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        tareaDAO = new TareaDAO(ListarTareasProyecto.this);
+        tareaDAO = TareaDAO.getInstance();
         tareaDAO.open();
         cursor = tareaDAO.listaTareas(idProyecto);
         tca = new TareaCursorAdapter(ListarTareasProyecto.this,cursor,tareaDAO);
@@ -149,5 +150,8 @@ public class ListarTareasProyecto extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public int getIdProyecto(){
+        return this.idProyecto;
+    }
 
 }

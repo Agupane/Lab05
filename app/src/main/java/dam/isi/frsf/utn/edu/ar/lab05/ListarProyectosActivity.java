@@ -68,7 +68,8 @@ public class ListarProyectosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        proyectoDAO = new ProyectoDAO(ListarProyectosActivity.this);
+        proyectoDAO = ProyectoDAO.getInstance();
+        proyectoDAO.setContext(ListarProyectosActivity.this);
         proyectoDAO.open();
         try {
             cursor = proyectoDAO.getCursorProyectos();

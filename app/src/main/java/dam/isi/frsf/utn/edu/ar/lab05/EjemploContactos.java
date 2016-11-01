@@ -29,7 +29,11 @@ import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class EjemploContactos extends AppCompatActivity {
+    private Context context;
 
+    public EjemploContactos(Context c){
+        this.context=c;
+    }
     public void nuevoContacto(){
         String accountType =null;
         String accountName =null;
@@ -100,7 +104,7 @@ public class EjemploContactos extends AppCompatActivity {
         }
         return usuario;
     }
-    public List<Usuario> listarContactos(Context context){
+    public List<Usuario> listarContactos(){
         pedirPermisos(context);
         List<Usuario> listaUsuarios = new ArrayList<>();
 
@@ -118,9 +122,9 @@ public class EjemploContactos extends AppCompatActivity {
         cursor.close();
         return listaUsuarios;
     }
-    private void pedirPermisos(Context context) {
+    private void pedirPermisos(Context c) {
         EjemploPermisos permisos = new EjemploPermisos();
-        permisos.askForContactPermission(context);
+        permisos.askForContactPermission(c);
     }
 
 }

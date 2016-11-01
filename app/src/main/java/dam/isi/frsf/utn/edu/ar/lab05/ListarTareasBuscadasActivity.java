@@ -26,7 +26,7 @@ public class ListarTareasBuscadasActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar_tareas_buscadas);
-        tareaDAO = new TareaDAO(this);
+        tareaDAO = TareaDAO.getInstance();
         lvTareasBuscadas = (ListView) findViewById(R.id.lvTareasResultado);
         intent = getIntent();
         minutosDesviadosBuscados = intent.getIntExtra("MinutosDesvioBuscados",1);

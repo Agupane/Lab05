@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.TareaException;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.UsuarioDAO;
@@ -33,6 +34,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
     private EjemploContactos ejemploContactos;
     private SeekBar sbPrioridad;
     private Integer horasEstimadas,intPrioridad;
+    private Integer idProyecto =-1;
     private Prioridad prioridad;
     private EditText etDescripcionTarea,etHorasEstimadas;
     private String descripcionTarea;
@@ -54,13 +56,20 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         }
         cargarComponentes();
          //listaUsuarios=proyectoDAO.listarUsuarios();
-        listaUsuarios = ejemploContactos.listarContactos(this); // Obtiene los contactos de la lista de contactos
+        listaUsuarios = ejemploContactos.listarContactos(); // Obtiene los contactos de la lista de contactos
         edicion = false;
-
+        idProyecto = getIntent().getIntExtra("ID_PROYECTO",idProyecto);
         if( (getIntent().getIntExtra("RESULT_CODE",2)) == 1) // Significa que soy una activity de editar
         {
             idTareaAEditar = (getIntent().getIntExtra("ID_TAREA",1));
-            tareaAEditar = tareaDAO.getTarea(idTareaAEditar);
+            /* Si hay problemas para encontrar la tarea a editar, vuelvo a la pantalla de listar tareas y aviso del problema */
+            try {
+                tareaAEditar = tareaDAO.getTarea(idTareaAEditar);
+            }
+            catch (TareaException e) {
+                setResult(ListarTareasProyecto.RESULT_CANCELED);
+                finish();
+            }
             if(tareaAEditar !=null) {
                 edicion=true;
                 etDescripcionTarea.setText(tareaAEditar.getDescripcion());
@@ -114,10 +123,11 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
         btnCancelar = (Button) findViewById(R.id.btnCancelar);
         prioridad = new Prioridad();
         listaUsuarios = new ArrayList();
-        proyectoDAO = new ProyectoDAO(this);
-        usuarioDAO = new UsuarioDAO(this);
-        tareaDAO = new TareaDAO(this);
-        ejemploContactos = new EjemploContactos();
+        proyectoDAO = ProyectoDAO.getInstance();
+        proyectoDAO.setContext(this);
+        usuarioDAO = UsuarioDAO.getInstance();
+        tareaDAO = TareaDAO.getInstance();
+        ejemploContactos = new EjemploContactos(this);
     }
 
     @Override
@@ -164,9 +174,8 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
             horasEstimadas = Integer.parseInt(String.valueOf(etHorasEstimadas.getText()));
             descripcionTarea = String.valueOf(etDescripcionTarea.getText());
             usuarioSeleccionado = (Usuario) spinnerListaUsuarios.getSelectedItem();
-            proyectoSeleccionado = proyectoDAO.getProyecto(1);
+            proyectoSeleccionado = proyectoDAO.getProyecto(idProyecto);
             prioridad = tareaDAO.getPrioridad(intPrioridad);
-
             if(descripcionTarea!=null && !descripcionTarea.isEmpty() && horasEstimadas!=null && usuarioSeleccionado!=null && prioridad!=null) // Si no hay datos vacio continuo
             {
                 usuarioSeleccionado = usuarioDAO.guardarUsuario(usuarioSeleccionado); // SI EL USUARIO NO EXISTIA LO GUARDA

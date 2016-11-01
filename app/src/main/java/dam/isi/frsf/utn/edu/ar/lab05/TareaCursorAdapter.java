@@ -20,6 +20,7 @@ import android.widget.ToggleButton;
 
 import java.util.concurrent.TimeUnit;
 
+import dam.isi.frsf.utn.edu.ar.lab05.Exception.TareaException;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
@@ -35,6 +36,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     private Long tArranqueTrabajo,tFinalTrabajo,tiempoTrabajado;
     private Button btnEliminar,btnFinalizar,btnEditar;
     private Integer minutosTrabajados;
+    private Integer idProyecto = -1;
     public TareaCursorAdapter (Context contexto, Cursor c, TareaDAO dao) {
         super(contexto, c, false);
         tareaDao = dao;
@@ -54,6 +56,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         //obtener la posicion de la fila actual y asignarla a los botones y checkboxes
         int pos = cursor.getPosition();
         this.contexto=context;
+        idProyecto = ((ListarTareasProyecto) context).getIdProyecto();
         // Referencias UI.
         TextView nombre= (TextView) view.findViewById(R.id.tareaTitulo);
         TextView tiempoAsignado= (TextView) view.findViewById(R.id.tareaMinutosAsignados);
@@ -90,6 +93,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
 
         btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEstado.setOnClickListener(this);
+        btnEstado.setChecked(false);
     }
 
     @Override
@@ -126,6 +130,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
      */
     private void accionBotonTrabajar(View v) {
         final Integer idTarea= (Integer) v.getTag();
+        /** TODO REVISAR ESTO PORQUE NO SE EJECUTA CUANDO PRESIONO TRABAJAR */
         if(!btnEstado.isChecked())
         {
             tArranqueTrabajo= System.currentTimeMillis();
@@ -135,6 +140,10 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         else
         {
             tFinalTrabajo=System.currentTimeMillis();
+            /** TODO - BORRAR ESTO */
+            if(tArranqueTrabajo == null){
+                tArranqueTrabajo= System.currentTimeMillis();
+            }
             tiempoTrabajado=tFinalTrabajo-tArranqueTrabajo;
             minutosTrabajados = (int) (( TimeUnit.MILLISECONDS.toSeconds(tiempoTrabajado) )/5);
            // minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
@@ -157,6 +166,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         final Integer idTarea= (Integer) view.getTag();
         Intent intEditarAct = new Intent(contexto,AltaTareaActivity.class);
         intEditarAct.putExtra("ID_TAREA",idTarea);
+        intEditarAct.putExtra("ID_PROYECTO",idProyecto);
         intEditarAct.putExtra("RESULT_CODE",1);
         ((Activity) contexto).startActivityForResult(intEditarAct,1);
 
@@ -171,13 +181,19 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             @Override
             public void run() {
                 Log.d("LAB05-MAIN","finalizar tarea : --- "+idTarea);
-                tareaDao.finalizar(idTarea);
+                try {
+                    tareaDao.finalizar(idTarea);
+                }
+                catch (TareaException e) {
+                   // Toast.makeText(contexto,e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
                 changeCursor(); // Con este mensaje se actualiza el cursor
-
             }
         });
         backGroundUpdate.start();
-        Toast.makeText(contexto,"La tarea se marco como finalizada",Toast.LENGTH_SHORT).show();
+        /** TODO - CAMBIAR ESTO PARA QUE NO MUESTRE EL MENSAJE SI NO SE PUDO FINALIZAR */
+        Toast.makeText(contexto, "La tarea se marco como finalizada", Toast.LENGTH_SHORT).show();
+
     }
 
     /**
@@ -194,7 +210,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message inputMessage) {
-            TareaCursorAdapter.this.changeCursor(tareaDao.listaTareas(1));
+            TareaCursorAdapter.this.changeCursor(tareaDao.listaTareas(idProyecto));
         }
     };
     /**
@@ -202,9 +218,14 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
      */
     private void accionBotonEliminar(View v){
         final Integer idTarea= (Integer) v.getTag();
-        tareaDao.borrarTarea(idTarea);
-        handlerRefresh.sendEmptyMessage(1);
-        Toast.makeText(contexto,"La tarea se elimino exitosamente",Toast.LENGTH_LONG).show();
+        try {
+            tareaDao.borrarTarea(idTarea);
+            handlerRefresh.sendEmptyMessage(1);
+            Toast.makeText(contexto, "La tarea se elimino exitosamente", Toast.LENGTH_LONG).show();
+        }
+        catch(TareaException e){
+            Toast.makeText(contexto, "La tarea no pudo ser eliminada, intente nuevamente", Toast.LENGTH_LONG).show();
+        }
     }
 
 }

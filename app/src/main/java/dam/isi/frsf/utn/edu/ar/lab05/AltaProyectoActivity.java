@@ -49,7 +49,8 @@ public class AltaProyectoActivity extends AppCompatActivity implements Button.On
     {
         etNombreProyecto = (EditText) findViewById(R.id.etNombreProyecto);
         btnCrearProyecto = (Button) findViewById(R.id.btnCrearProyecto);
-        proyectoDAO = new ProyectoDAO(this);
+        proyectoDAO = ProyectoDAO.getInstance();
+        proyectoDAO.setContext(this);
     }
 
     @Override

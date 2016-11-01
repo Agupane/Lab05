@@ -22,6 +22,7 @@ public class ProyectoOpenHelper extends SQLiteOpenHelper {
     public ProyectoOpenHelper(Context context) {
         super(context, ProyectoDBMetadata.NOMBRE_DB, null, ProyectoDBMetadata.VERSION_DB);
         this.context=context;
+
         if(dropAndCreate)
         {
             onCreate (getWritableDatabase() );

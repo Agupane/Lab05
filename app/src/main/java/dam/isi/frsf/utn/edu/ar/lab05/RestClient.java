@@ -22,11 +22,16 @@ import dam.isi.frsf.utn.edu.ar.lab05.Exception.RestException;
  */
 
 public class RestClient {
-
+    private final int LOG_CONEXIONES_HTTP = 2; // Solo muestra logs de conexiones http
+    private final int LOG_DATOS = 1; // Muestra los de datos que se envian
+    private final int LOG_EXCEPTIONS=0; // Muestra los mensajes de las exceptions
+    private final int LOG_TODOS=3; // Muestra todos los logs;
+    /* OJO!!! SI NO SE HACE EL LOG DE LAS CONEXIONES HTTP, LAS OPERACIONES NO SE REALIZAN!! (ES NECESARIO EJECUTAR urlConnection.getResponseMessage) */
+    private final int tipoLogActivado=LOG_CONEXIONES_HTTP;  // Default
     private final String IP_SERVER = "10.0.2.2";
     private final String PORT_SERVER = "4000";
     private final String TAG_LOG = "LAB06";
-
+    private final boolean activarLog=false;
     /**
      * Devuelve el JSON existente en la url destino que tenga la id parametro y se encuentre
      * En el path parametro
@@ -39,7 +44,9 @@ public class RestClient {
         HttpURLConnection urlConnection=null;
         try {
             URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path+"/"+id);
-            Log.d("TAG_LOG",url.getPath()+ " --> "+url.toString());
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("TAG_LOG", url.getPath() + " --> " + url.toString());
+            }
             urlConnection= (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             InputStreamReader isw = new InputStreamReader(in);
@@ -51,11 +58,15 @@ public class RestClient {
                 sb.append(current);
                 data = isw.read();
             }
-            Log.d("TAG_LOG",url.getPath()+ " --> "+sb.toString());
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("TAG_LOG", url.getPath() + " --> " + sb.toString());
+            }
             resultado = new JSONObject(sb.toString());
         }
         catch (IOException e) {
-            Log.e("TEST-ARR",e.getMessage(),e);
+            if(tipoLogActivado == LOG_EXCEPTIONS|| tipoLogActivado == LOG_TODOS) {
+                Log.e("TEST-ARR", e.getMessage(), e);
+            }
             throw new RestException(e.getMessage());
             //e.printStackTrace();
         }
@@ -79,7 +90,9 @@ public class RestClient {
         HttpURLConnection urlConnection=null;
         try {
             URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path);
-            Log.d("TAG_LOG",url.getPath()+ " --> "+url.toString());
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("TAG_LOG", url.getPath() + " --> " + url.toString());
+            }
             urlConnection= (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             InputStreamReader isw = new InputStreamReader(in);
@@ -91,11 +104,15 @@ public class RestClient {
                 sb.append(current);
                 data = isw.read();
             }
-            Log.d("TAG_LOG",url.getPath()+ " --> "+sb.toString());
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("TAG_LOG", url.getPath() + " --> " + sb.toString());
+            }
             resultado = new JSONArray(sb.toString());
         }
         catch (IOException e) {
-            Log.e("TEST-ARR",e.getMessage(),e);
+            if(tipoLogActivado == LOG_EXCEPTIONS || tipoLogActivado == LOG_TODOS) {
+                Log.e("TEST-ARR", e.getMessage(), e);
+            }
             throw new RestException(e.getMessage());
            // e.printStackTrace();
         }
@@ -118,7 +135,9 @@ public class RestClient {
         try{
             String str= objeto.toString();
             byte[] data=str.getBytes("UTF-8");
-            Log.d("Creando objeto","datos---> "+str);
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("Creando objeto", "datos---> " + str);
+            }
             crearHttpConnectionParaCrearOActualizar(data,"POST",path);
         }
         catch(MalformedURLException e){
@@ -139,7 +158,9 @@ public class RestClient {
         try {
             String str = objeto.toString();
             byte[] data = str.getBytes("UTF-8");
-            Log.d("Actualizando", "datos a actualizar ---> " + str);
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("Actualizando", "datos a actualizar ---> " + str);
+            }
             crearHttpConnectionParaCrearOActualizar(data, "PUT", path);
         }
         catch(MalformedURLException e){
@@ -160,17 +181,16 @@ public class RestClient {
     public void borrar(Integer id,String path) throws RestException {
         try {
             path=path+"/"+id;
-            Log.d("Borrando objeto", "id: "+id+" path:"+path);
+            if(tipoLogActivado == LOG_DATOS || tipoLogActivado == LOG_TODOS) {
+                Log.d("Borrando objeto", "id: " + id + " path:" + path);
+            }
             crearHttpConnectionParaBusquedaOEliminacion("DELETE", path);
         }
         catch(MalformedURLException e){
-       //     e.printStackTrace();
+            //     e.printStackTrace();
             throw new RestException(e.getMessage());
         }
-        catch(IOException e){
-        //    e.printStackTrace();
-            throw new RestException(e.getMessage());
-        }
+
     }
 
     /**
@@ -198,7 +218,9 @@ public class RestClient {
                 flujoSalida.write(datosAEnviar);
                 flujoSalida.flush();
                 flujoSalida.close();
-                Log.d("HTTP-Connection","Respuesta a solicitud "+tipoDeRequest+": "+urlConnection.getResponseMessage());
+                if(tipoLogActivado == LOG_CONEXIONES_HTTP || tipoLogActivado == LOG_TODOS) {
+                    Log.d("HTTP-Connection", "Respuesta a solicitud " + tipoDeRequest + ": " + urlConnection.getResponseMessage());
+                }
             }
             catch(IOException e){
                 e.printStackTrace();
@@ -229,7 +251,9 @@ public class RestClient {
                 flujoSalida.flush();
                 flujoSalida.close();
                 */
-                Log.d("HTTP-Connection","Respuesta a solicitud "+tipoDeRequest+": "+urlConnection.getResponseMessage());
+                if(tipoLogActivado == LOG_CONEXIONES_HTTP || tipoLogActivado == LOG_TODOS) {
+                    Log.d("HTTP-Connection", "Respuesta a solicitud " + tipoDeRequest + ": " + urlConnection.getResponseMessage());
+                }
             }
             catch(IOException e){
 
@@ -242,4 +266,5 @@ public class RestClient {
             throw new MalformedURLException("El tipo de request solicitado no es GET O DELETE");
         }
     }
+
 }
