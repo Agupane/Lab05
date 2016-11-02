@@ -344,6 +344,12 @@ public class ProyectoApiRest {
         }
     }
 
+    public void actualizarMinutosTrabajados(Integer idTarea,Integer minutosTrabajados) throws TareaException {
+        Tarea tareaParaActualizar = getTarea(idTarea);
+        tareaParaActualizar.setMinutosTrabajados(minutosTrabajados);
+        actualizarTarea(tareaParaActualizar);
+    }
+
     public void finalizarTarea(Integer idTarea) throws TareaException{
         JSONObject jsonNuevaTarea = new JSONObject();
         RestClient cliRest = new RestClient();

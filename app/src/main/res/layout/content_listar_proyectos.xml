@@ -10,11 +10,25 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="dam.isi.frsf.utn.edu.ar.lab05.ListarTareasProyecto"
-    tools:showIn="@layout/activity_main">
+    tools:context="dam.isi.frsf.utn.edu.ar.lab05.ListarProyectosActivity"
+    tools:showIn="@layout/activity_listar_proyectos">
 
-    <ListView
-        android:id="@+id/listaTareas"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="@string/listas_de_proyectos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvVerProyecto" />
+
+        <ListView
+            android:id="@+id/lvProyecto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
 </LinearLayout>

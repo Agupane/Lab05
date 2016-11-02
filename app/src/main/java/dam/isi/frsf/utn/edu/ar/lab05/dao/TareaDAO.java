@@ -155,10 +155,15 @@ public class TareaDAO {
         }
     }
 
+    /**
+     * retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto) que el tiempo planificado.
+     * si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
+     * TODO Implementar rest
+     * @param soloTerminadas
+     * @param desvioMinimo
+     * @return
+     */
     public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMinimo){
-        // retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto)
-        // que el tiempo planificado.
-        // si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
         Cursor resultadoTareas;
         List<Tarea> listaTareasDesviadas = new ArrayList<>();
         Tarea nuevaTarea;
@@ -207,6 +212,7 @@ public class TareaDAO {
 
     /**
      * TODO Implementar la consulta bien y borrar esto, es solo temporal
+     * IMPLEMENTAR MODO REST
      * Filtra las tareas segun el numero de desvio, METODO A BORRAR
      * @param listaTareas
      *
@@ -231,14 +237,18 @@ public class TareaDAO {
 
     public void ActualizarMinutosTrabajados(Integer idTarea, int minutosTrabajados)
     {
-        ContentValues valores = new ContentValues();
-        valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,minutosTrabajados);
         try {
-            open(true);
-            db.execSQL("UPDATE " + ProyectoDBMetadata.TABLA_TAREAS + " SET MINUTOS_TRABAJDOS = MINUTOS_TRABAJDOS + "+minutosTrabajados+" WHERE _ID = "+idTarea);
+            if (usarApiRest) {
+                daoApiRest.actualizarMinutosTrabajados(idTarea,minutosTrabajados);
+            }
+            else {
+                ContentValues valores = new ContentValues();
+                valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, minutosTrabajados);
+                open(true);
+                db.execSQL("UPDATE " + ProyectoDBMetadata.TABLA_TAREAS + " SET MINUTOS_TRABAJDOS = MINUTOS_TRABAJDOS + " + minutosTrabajados + " WHERE _ID = " + idTarea);
+            }
         }
-        catch (Exception e)
-        {
+        catch(Exception e){
             System.out.println(e.getMessage());
             System.out.println("Exploto la bd al actualizar los minutos");
         }
@@ -324,6 +334,7 @@ public class TareaDAO {
 
     /**
      * Devuelve el objeto prioridad  con el id parametro
+     * TODO PONERLE EL MODO REST
      * @param idPrioridad
      * @return
      */
@@ -339,7 +350,7 @@ public class TareaDAO {
 
         }
         catch (Exception e) {
-            throw new TareaException("Se produjo une rror al encontrar la prioridad");
+            throw new TareaException("Se produjo un error al encontrar la prioridad");
         }
         finally {
             return prioridad;

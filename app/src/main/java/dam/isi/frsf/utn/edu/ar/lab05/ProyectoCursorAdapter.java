@@ -96,7 +96,6 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
 
     /**
      * Accion que se ejecuta cuando se presiona el boton editar
-     * TODO Terminar de armar el editar y devolver un resultado
      */
     private void accionBotonEditarDatos(View view) {
         final Integer idProyecto= (Integer) view.getTag();
@@ -146,12 +145,11 @@ public class ProyectoCursorAdapter extends CursorAdapter implements View.OnClick
 
     /**
      * Accion que se ejecuta cuando se presiona el boton ver taras
-     * TODO TERMINAR
      * @param v
      */
     private void accionBotonVerTareas(View v){
         final Integer idProyecto = (Integer) v.getTag();
-        Intent intListarTareas = new Intent(contexto,ListarTareasProyecto.class);
+        Intent intListarTareas = new Intent(contexto,ListarTareasProyectoActivity.class);
         intListarTareas.putExtra("ID_PROYECTO", idProyecto);
         ((Activity) contexto).startActivityForResult(intListarTareas,0);
     }

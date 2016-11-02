@@ -32,6 +32,7 @@ public class RestClient {
     private final String PORT_SERVER = "4000";
     private final String TAG_LOG = "LAB06";
     private final boolean activarLog=false;
+    private String msgRespuestaServidor;
     /**
      * Devuelve el JSON existente en la url destino que tenga la id parametro y se encuentre
      * En el path parametro
@@ -202,7 +203,7 @@ public class RestClient {
      * @param tipoDeRequest puede ser POST PUT O DELETE
      * @param path url a donde enviar los datos
      */
-    private void crearHttpConnectionParaCrearOActualizar(byte[] datosAEnviar, String tipoDeRequest, String path) throws MalformedURLException {
+    private void crearHttpConnectionParaCrearOActualizar(byte[] datosAEnviar, String tipoDeRequest, String path) throws MalformedURLException, RestException {
         tipoDeRequest=tipoDeRequest.toUpperCase();
         if(tipoDeRequest.equals("POST") || tipoDeRequest.equals("PUT")){
             HttpURLConnection urlConnection=null;
@@ -219,7 +220,11 @@ public class RestClient {
                 flujoSalida.flush();
                 flujoSalida.close();
                 if(tipoLogActivado == LOG_CONEXIONES_HTTP || tipoLogActivado == LOG_TODOS) {
-                    Log.d("HTTP-Connection", "Respuesta a solicitud " + tipoDeRequest + ": " + urlConnection.getResponseMessage());
+                    msgRespuestaServidor = urlConnection.getResponseMessage();
+                    Log.d("HTTP-Connection", "Respuesta a solicitud " + tipoDeRequest + ": " + msgRespuestaServidor);
+                    if(msgRespuestaServidor.equals("Not Found")){
+                        throw new RestException("La solicitud no se pudo procesar");
+                    }
                 }
             }
             catch(IOException e){
@@ -234,7 +239,7 @@ public class RestClient {
         }
     }
 
-    private void crearHttpConnectionParaBusquedaOEliminacion(String tipoDeRequest, String path) throws MalformedURLException {
+    private void crearHttpConnectionParaBusquedaOEliminacion(String tipoDeRequest, String path) throws MalformedURLException, RestException {
         tipoDeRequest=tipoDeRequest.toUpperCase();
         if(tipoDeRequest.equals("GET") || tipoDeRequest.equals("DELETE")){
             HttpURLConnection urlConnection=null;
@@ -244,15 +249,12 @@ public class RestClient {
                 urlConnection.setDoOutput(true);
                 urlConnection.setRequestMethod(tipoDeRequest);
                 urlConnection.setRequestProperty("Content-Type","application/json");
-
-                /*
-                DataOutputStream flujoSalida = new DataOutputStream(urlConnection.getOutputStream());
-                flujoSalida.write(datosAEnviar);
-                flujoSalida.flush();
-                flujoSalida.close();
-                */
                 if(tipoLogActivado == LOG_CONEXIONES_HTTP || tipoLogActivado == LOG_TODOS) {
-                    Log.d("HTTP-Connection", "Respuesta a solicitud " + tipoDeRequest + ": " + urlConnection.getResponseMessage());
+                    msgRespuestaServidor = urlConnection.getResponseMessage();
+                    Log.d("HTTP-Connection", "Respuesta a solicitud " + tipoDeRequest + ": " + msgRespuestaServidor);
+                    if(msgRespuestaServidor.equals("Not Found")){
+                        throw new RestException("La solicitud no se pudo procesar");
+                    }
                 }
             }
             catch(IOException e){

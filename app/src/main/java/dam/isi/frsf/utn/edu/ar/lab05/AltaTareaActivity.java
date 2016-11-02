@@ -1,6 +1,5 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
-import android.database.CursorJoiner;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -67,7 +66,7 @@ public class AltaTareaActivity extends AppCompatActivity implements SeekBar.OnSe
                 tareaAEditar = tareaDAO.getTarea(idTareaAEditar);
             }
             catch (TareaException e) {
-                setResult(ListarTareasProyecto.RESULT_CANCELED);
+                setResult(ListarTareasProyectoActivity.RESULT_CANCELED);
                 finish();
             }
             if(tareaAEditar !=null) {

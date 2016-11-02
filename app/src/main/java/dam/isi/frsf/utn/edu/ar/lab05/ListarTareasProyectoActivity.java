@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +15,7 @@ import android.widget.Toast;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
 
-public class ListarTareasProyecto extends AppCompatActivity {
+public class ListarTareasProyectoActivity extends AppCompatActivity {
 
     private ListView lvTareas;
     private ProyectoDAO proyectoDAO;
@@ -29,7 +28,7 @@ public class ListarTareasProyecto extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_listar_tareas_proyecto);
       //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
      //   setSupportActionBar(toolbar);
         idProyecto = getIntent().getIntExtra("ID_PROYECTO",idProyecto);
@@ -38,8 +37,8 @@ public class ListarTareasProyecto extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ejemploPermisos = new EjemploPermisos();
-                ejemploPermisos.askForContactPermission(ListarTareasProyecto.this);
-                Intent intActAlta= new Intent(ListarTareasProyecto.this,AltaTareaActivity.class);
+                ejemploPermisos.askForContactPermission(ListarTareasProyectoActivity.this);
+                Intent intActAlta= new Intent(ListarTareasProyectoActivity.this,AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
                 intActAlta.putExtra("ID_PROYECTO",idProyecto);
                 startActivityForResult(intActAlta,0);
@@ -105,7 +104,7 @@ public class ListarTareasProyecto extends AppCompatActivity {
         tareaDAO = TareaDAO.getInstance();
         tareaDAO.open();
         cursor = tareaDAO.listaTareas(idProyecto);
-        tca = new TareaCursorAdapter(ListarTareasProyecto.this,cursor,tareaDAO);
+        tca = new TareaCursorAdapter(ListarTareasProyectoActivity.this,cursor,tareaDAO);
         lvTareas.setAdapter(tca);
 
     }
@@ -134,15 +133,18 @@ public class ListarTareasProyecto extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch(id)
         {
-            case R.id.action_settings: return true;
+            case R.id.action_settings: {
+                Toast.makeText(getApplicationContext(),"Esta opcion no esta disponible ",Toast.LENGTH_SHORT).show();
+                break;
+            }
 
             case R.id.action_buscar_tareas:{
-                Intent intActBuscar= new Intent(ListarTareasProyecto.this,BuscarTareasActivity.class);
+                Intent intActBuscar= new Intent(ListarTareasProyectoActivity.this,BuscarTareasActivity.class);
                 startActivity(intActBuscar);
                 break;
             }
             case R.id.consultar_proyectos:{
-                Intent intActConsultarProyectos = new Intent(ListarTareasProyecto.this,ListarProyectosActivity.class);
+                Intent intActConsultarProyectos = new Intent(ListarTareasProyectoActivity.this,ListarProyectosActivity.class);
                 startActivity(intActConsultarProyectos);
                 break;
             }

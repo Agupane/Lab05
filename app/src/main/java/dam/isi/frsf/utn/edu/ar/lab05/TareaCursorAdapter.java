@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,14 +22,13 @@ import android.widget.ToggleButton;
 import java.util.concurrent.TimeUnit;
 
 import dam.isi.frsf.utn.edu.ar.lab05.Exception.TareaException;
-import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.TareaDAO;
 
 /**
  * Created by mdominguez on 06/10/16.
  */
-public class TareaCursorAdapter extends CursorAdapter implements View.OnClickListener{
+public class TareaCursorAdapter extends CursorAdapter implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private LayoutInflater inflador;
     private TareaDAO tareaDao;
     private Context contexto;
@@ -56,7 +56,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         //obtener la posicion de la fila actual y asignarla a los botones y checkboxes
         int pos = cursor.getPosition();
         this.contexto=context;
-        idProyecto = ((ListarTareasProyecto) context).getIdProyecto();
+        idProyecto = ((ListarTareasProyectoActivity) context).getIdProyecto();
         // Referencias UI.
         TextView nombre= (TextView) view.findViewById(R.id.tareaTitulo);
         TextView tiempoAsignado= (TextView) view.findViewById(R.id.tareaMinutosAsignados);
@@ -92,8 +92,8 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         btnFinalizar.setOnClickListener(this);
 
         btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
-        btnEstado.setOnClickListener(this);
-        btnEstado.setChecked(false);
+        btnEstado.setOnCheckedChangeListener(this);
+
     }
 
     @Override
@@ -101,11 +101,6 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     {
         switch(v.getId())
         {
-            case R.id.tareaBtnTrabajando:
-            {
-                accionBotonTrabajar(v);
-                break;
-            }
             case R.id.tareaBtnEditarDatos:
             {
                 accionBotonEditarDatos(v);
@@ -125,13 +120,13 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
 
     }
 
+    @Override
     /**
-     * Accion que se ejecuta cuando se presiona el boton de trabajar
+     * Metodo que se ejecuta cuando se presiona el boton trabajar
      */
-    private void accionBotonTrabajar(View v) {
-        final Integer idTarea= (Integer) v.getTag();
-        /** TODO REVISAR ESTO PORQUE NO SE EJECUTA CUANDO PRESIONO TRABAJAR */
-        if(!btnEstado.isChecked())
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        final Integer idTarea= (Integer) buttonView.getTag();
+        if(isChecked)
         {
             tArranqueTrabajo= System.currentTimeMillis();
             btnEstado.setChecked(true);
@@ -140,10 +135,6 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         else
         {
             tFinalTrabajo=System.currentTimeMillis();
-            /** TODO - BORRAR ESTO */
-            if(tArranqueTrabajo == null){
-                tArranqueTrabajo= System.currentTimeMillis();
-            }
             tiempoTrabajado=tFinalTrabajo-tArranqueTrabajo;
             minutosTrabajados = (int) (( TimeUnit.MILLISECONDS.toSeconds(tiempoTrabajado) )/5);
            // minutosTrabajados = ( (int) ( (tiempoTrabajado/(1000) )%60) )/5; // Pasa de milisegundos a segundos y despues divido por 5 para pasarlo a minutos
@@ -157,10 +148,8 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             Toast.makeText(contexto,"Dejaste de trabajar",Toast.LENGTH_SHORT).show();
         }
     }
-
     /**
      * Accion que se ejecuta cuando se presiona el boton editar datos
-     * TODO Terminar de armar el editar y devolver un resultado
      */
     private void accionBotonEditarDatos(View view) {
         final Integer idTarea= (Integer) view.getTag();
