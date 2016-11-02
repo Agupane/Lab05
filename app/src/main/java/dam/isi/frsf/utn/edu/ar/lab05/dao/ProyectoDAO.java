@@ -18,7 +18,8 @@ import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 public class ProyectoDAO {
     private static final int MODO_PERSISTENCIA_MIXTA = 2;  // Los datos se almacenan en la api rest y en local
     private static final int MODO_PERSISTENCIA_LOCAL = 1;  // Los datos se almacenan solamente en la bdd local
-    private static final int MODO_PERSISTENCIA_REMOTA = 0; // Los datos se almacenan solamente en la nube
+    private static final int MODO_PERSISTENCIA_REMOTA = 0;
+    private static final int MODO_PERSISTENCIA_CONFIGURADA = MODO_PERSISTENCIA_MIXTA;// Los datos se almacenan solamente en la nube
     private static ProyectoOpenHelper dbHelper;
     private final static ProyectoApiRest daoApiRest = ProyectoApiRest.getInstance();
     private static boolean usarApiRest;
@@ -88,56 +89,106 @@ public class ProyectoDAO {
      * @param idProyecto
      */
     public void borrarProyecto(int idProyecto) throws ProyectoException {
-        try {
-            if (usarApiRest) {
-                daoApiRest.borrarProyecto(idProyecto);
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                borrarProyectoLocal(idProyecto);
+                break;
             }
-            else {
-                String[] args = {String.valueOf(idProyecto)};
-                open(true);
-                db.delete(ProyectoDBMetadata.TABLA_PROYECTO, "_id=?", args);
-                daoApiRest.borrarProyecto(idProyecto);
+            case MODO_PERSISTENCIA_REMOTA:{
+                borrarProyectoRemoto(idProyecto);
+                break;
             }
+            case MODO_PERSISTENCIA_MIXTA:{
+                borrarProyectoLocal(idProyecto);
+                borrarProyectoRemoto(idProyecto);
+                break;
+            }
+        }
+    }
+
+    private void borrarProyectoLocal(int idProyecto) throws ProyectoException {
+        try{
+            String[] args = {String.valueOf(idProyecto)};
+            open(true);
+            db.delete(ProyectoDBMetadata.TABLA_PROYECTO, "_id=?", args);
+            daoApiRest.borrarProyecto(idProyecto);
         }
         catch(Exception e){
             throw new ProyectoException("El proyecto no pudo ser eliminado");
         }
     }
 
+    private void borrarProyectoRemoto(int idProyecto) throws ProyectoException {
+        daoApiRest.borrarProyecto(idProyecto);
+    }
+
     public void nuevoProyecto(Proyecto nuevoProyecto) throws ProyectoException {
-        try {
-            if (usarApiRest) {
-                daoApiRest.crearProyecto(nuevoProyecto);
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                nuevoProyectoLocal(nuevoProyecto);
+                break;
             }
-            else {
-                ContentValues datosAGuardar = new ContentValues();
-                datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO, nuevoProyecto.getNombre());
-                open(true);
-                db.insert(ProyectoDBMetadata.TABLA_PROYECTO, null, datosAGuardar);
+            case MODO_PERSISTENCIA_REMOTA:{
+                nuevoProyectoRemoto(nuevoProyecto);
+                break;
             }
+            case MODO_PERSISTENCIA_MIXTA:{
+                nuevoProyectoLocal(nuevoProyecto);
+                nuevoProyectoRemoto(nuevoProyecto);
+                break;
+            }
+        }
+    }
+
+    private void nuevoProyectoLocal(Proyecto nuevoProyecto) throws ProyectoException {
+        try{
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO, nuevoProyecto.getNombre());
+            open(true);
+            db.insert(ProyectoDBMetadata.TABLA_PROYECTO, null, datosAGuardar);
         }
         catch(Exception e){
             throw new ProyectoException("El proyecto no pudo ser creado");
         }
     }
 
+    private void nuevoProyectoRemoto(Proyecto nuevoProyecto) throws ProyectoException {
+        daoApiRest.crearProyecto(nuevoProyecto);
+    }
+
     public void actualizarProyecto(Proyecto p) throws ProyectoException {
-        try {
-            if (usarApiRest) {
-                daoApiRest.actualizarProyecto(p);
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                actualizarProyectoLocal(p);
+                break;
             }
-            else {
-                ContentValues datosAGuardar = new ContentValues();
-                datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO, p.getNombre());
-                open(true);
-                db.update(ProyectoDBMetadata.TABLA_PROYECTO, datosAGuardar, ProyectoDBMetadata.TablaProyectoMetadata._ID + "=" + p.getId(), null);
+            case MODO_PERSISTENCIA_REMOTA:{
+                actualizarProyectoRemoto(p);
+                break;
             }
+            case MODO_PERSISTENCIA_MIXTA:{
+                actualizarProyectoLocal(p);
+                actualizarProyectoRemoto(p);
+                break;
+            }
+        }
+    }
+
+    private void actualizarProyectoLocal(Proyecto p) throws ProyectoException {
+        try{
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO, p.getNombre());
+            open(true);
+            db.update(ProyectoDBMetadata.TABLA_PROYECTO, datosAGuardar, ProyectoDBMetadata.TablaProyectoMetadata._ID + "=" + p.getId(), null);
         }
         catch(Exception e){
             throw new ProyectoException("El proyecto no se pudo actualizar");
         }
     }
 
+    private void actualizarProyectoRemoto(Proyecto p) throws ProyectoException{
+        daoApiRest.actualizarProyecto(p);
+    }
     /**
      * Devuelve una lista con todos los proyectos, exception sino encuentra nada o se produce un error
      * @return

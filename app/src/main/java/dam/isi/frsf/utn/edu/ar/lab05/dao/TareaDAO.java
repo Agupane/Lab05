@@ -43,7 +43,7 @@ public class TareaDAO {
     private static final int MODO_PERSISTENCIA_MIXTA = 2;  // Los datos se almacenan en la api rest y en local
     private static final int MODO_PERSISTENCIA_LOCAL = 1;  // Los datos se almacenan solamente en la bdd local
     private static final int MODO_PERSISTENCIA_REMOTA = 0; // Los datos se almacenan solamente en la nube
-    private static int MODO_PERSISTENCIA_CONFIGURADA; // Como default es remota
+    private static int MODO_PERSISTENCIA_CONFIGURADA = MODO_PERSISTENCIA_MIXTA; // Como default es mixta
     private static boolean usarApiRest = true; // default true
     private static ProyectoOpenHelper dbHelper = new ProyectoOpenHelper(MyApplication.getAppContext());
     private static ProyectoApiRest daoApiRest = new ProyectoApiRest();
@@ -121,33 +121,54 @@ public class TareaDAO {
      * @param idTarea
      */
     public void borrarTarea(int idTarea) throws TareaException {
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                finalizarLocal(idTarea);
+                break;
+            }
+            case MODO_PERSISTENCIA_REMOTA:{
+                finalizarRemoto(idTarea);
+                break;
+            }
+            case MODO_PERSISTENCIA_MIXTA:{
+                finalizarLocal(idTarea);
+                finalizarRemoto(idTarea);
+                break;
+            }
+        }
+    }
+
+    private void borrarTareaLocal(int idTarea) throws TareaException {
         try {
-            if (usarApiRest) {
-                daoApiRest.borrarTarea(idTarea);
-            }
-            else {
-                String[] args = {String.valueOf(idTarea)};
-                open(true);
-                db.delete(ProyectoDBMetadata.TABLA_TAREAS, "_id=?", args);
-            }
+            String[] args = {String.valueOf(idTarea)};
+            open(true);
+            db.delete(ProyectoDBMetadata.TABLA_TAREAS, "_id=?", args);
         }
         catch(Exception e){
             throw new TareaException("La tarea no pudo ser eliminada");
         }
     }
 
+    private void borrarTareaRemoto(int idTarea) throws TareaException {
+        daoApiRest.borrarTarea(idTarea);
+    }
+
     public void finalizar(Integer idTarea) throws TareaException{
         try {
-            if (usarApiRest) {
-                daoApiRest.finalizarTarea(idTarea);
-            }
-            else {
-                //Establecemos los campos-valores a actualizar
-                ContentValues valores = new ContentValues();
-                valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA, 1);
-                SQLiteDatabase mydb = dbHelper.getWritableDatabase();
-                mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
-                // mydb.close();
+            switch(MODO_PERSISTENCIA_CONFIGURADA){
+                case MODO_PERSISTENCIA_LOCAL:{
+                    finalizarLocal(idTarea);
+                    break;
+                }
+                case MODO_PERSISTENCIA_REMOTA:{
+                    finalizarRemoto(idTarea);
+                    break;
+                }
+                case MODO_PERSISTENCIA_MIXTA:{
+                    finalizarLocal(idTarea);
+                    finalizarRemoto(idTarea);
+                    break;
+                }
             }
         }
         catch(Exception e){
@@ -155,6 +176,16 @@ public class TareaDAO {
         }
     }
 
+    private void finalizarLocal(Integer idTarea) throws TareaException {
+        //Establecemos los campos-valores a actualizar
+        ContentValues valores = new ContentValues();
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA, 1);
+        SQLiteDatabase mydb = dbHelper.getWritableDatabase();
+        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
+    }
+    private void finalizarRemoto(Integer idTarea) throws TareaException{
+        daoApiRest.finalizarTarea(idTarea);
+    }
     /**
      * retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto) que el tiempo planificado.
      * si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
@@ -237,65 +268,128 @@ public class TareaDAO {
 
     public void ActualizarMinutosTrabajados(Integer idTarea, int minutosTrabajados)
     {
-        try {
-            if (usarApiRest) {
-                daoApiRest.actualizarMinutosTrabajados(idTarea,minutosTrabajados);
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                ActualizarMinutosTrabajadosLocal(idTarea,minutosTrabajados);
+                break;
             }
-            else {
-                ContentValues valores = new ContentValues();
-                valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, minutosTrabajados);
-                open(true);
-                db.execSQL("UPDATE " + ProyectoDBMetadata.TABLA_TAREAS + " SET MINUTOS_TRABAJDOS = MINUTOS_TRABAJDOS + " + minutosTrabajados + " WHERE _ID = " + idTarea);
+            case MODO_PERSISTENCIA_REMOTA:{
+                ActualizarMinutosTrabajadosRemoto(idTarea,minutosTrabajados);
+                break;
+            }
+            case MODO_PERSISTENCIA_MIXTA:{
+                ActualizarMinutosTrabajadosLocal(idTarea,minutosTrabajados);
+                ActualizarMinutosTrabajadosRemoto(idTarea,minutosTrabajados);
+                break;
             }
         }
+    }
+
+    private void ActualizarMinutosTrabajadosLocal(Integer idTarea, int minutosTrabajados){
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, minutosTrabajados);
+            open(true);
+            db.execSQL("UPDATE " + ProyectoDBMetadata.TABLA_TAREAS + " SET MINUTOS_TRABAJDOS = MINUTOS_TRABAJDOS + " + minutosTrabajados + " WHERE _ID = " + idTarea);
+        }
         catch(Exception e){
-            System.out.println(e.getMessage());
-            System.out.println("Exploto la bd al actualizar los minutos");
+            /* TODO SACAR ESTE CATCH Y TIRAR LA EXCEPTION */
+        }
+    }
+    private void ActualizarMinutosTrabajadosRemoto(Integer idTarea, int minutosTrabajados){
+        try {
+            daoApiRest.actualizarMinutosTrabajados(idTarea,minutosTrabajados);
+        } catch (TareaException e) {
+            /* TODO SACAR ESTE CATCH Y TIRAR LA EXCEPTION */
         }
     }
 
     public void actualizarTarea(Tarea t) throws TareaException {
-        try {
-            if (usarApiRest) {
-                daoApiRest.actualizarTarea(t);
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                actualizarTareaLocal(t);
+                break;
             }
-            else {
-                ContentValues datosAGuardar = new ContentValues();
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS, t.getHorasEstimadas());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, 0);
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD, t.getPrioridad().getId());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO, t.getProyecto().getId());
-                open(true);
-                db.update(ProyectoDBMetadata.TABLA_TAREAS, datosAGuardar, ProyectoDBMetadata.TablaTareasMetadata._ID + "=" + t.getId(), null);
+            case MODO_PERSISTENCIA_REMOTA:{
+                actualizarTareaRemoto(t);
+                break;
             }
+            case MODO_PERSISTENCIA_MIXTA:{
+                actualizarTareaLocal(t);
+                actualizarTareaRemoto(t);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Actualiza la tarea en la bdd local
+     * @param t
+     * @throws TareaException
+     */
+    private void actualizarTareaLocal(Tarea t) throws TareaException{
+        try{
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS, t.getHorasEstimadas());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, 0);
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD, t.getPrioridad().getId());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO, t.getProyecto().getId());
+            open(true);
+            db.update(ProyectoDBMetadata.TABLA_TAREAS, datosAGuardar, ProyectoDBMetadata.TablaTareasMetadata._ID + "=" + t.getId(), null);
         }
         catch(Exception e){
             throw new TareaException("La tarea no pudo ser actualizada, intente nuevamente");
         }
     }
 
+    /**
+     * Actualiza la tarea en la bdd remota
+     * @param t
+     * @throws TareaException
+     */
+    private void actualizarTareaRemoto(Tarea t) throws TareaException {
+        daoApiRest.actualizarTarea(t);
+    }
+
     public void nuevaTarea(Tarea t) throws TareaException {
-        try {
-            if (usarApiRest) {
-                daoApiRest.guardarTarea(t);
+        switch(MODO_PERSISTENCIA_CONFIGURADA){
+            case MODO_PERSISTENCIA_LOCAL:{
+                nuevaTareaLocal(t);
+                break;
             }
-            else {
-                ContentValues datosAGuardar = new ContentValues();
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS, t.getHorasEstimadas());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, 0);
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD, t.getPrioridad().getId());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
-                datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO, t.getProyecto().getId());
-                open(true);
-                db.insert(ProyectoDBMetadata.TABLA_TAREAS, null, datosAGuardar);
+            case MODO_PERSISTENCIA_REMOTA:{
+                nuevaTareaRemoto(t);
+                break;
             }
+            case MODO_PERSISTENCIA_MIXTA:{
+                nuevaTareaLocal(t);
+                nuevaTareaRemoto(t);
+                break;
+            }
+        }
+    }
+
+    private void nuevaTareaLocal(Tarea t) throws TareaException {
+        try{
+            ContentValues datosAGuardar = new ContentValues();
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS, t.getHorasEstimadas());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, 0);
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD, t.getPrioridad().getId());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
+            datosAGuardar.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO, t.getProyecto().getId());
+            open(true);
+            db.insert(ProyectoDBMetadata.TABLA_TAREAS, null, datosAGuardar);
         }
         catch(Exception e){
             throw new TareaException("La tarea no pudo ser creada");
         }
+    }
+
+    private void nuevaTareaRemoto(Tarea t) throws TareaException {
+        daoApiRest.guardarTarea(t);
     }
 
     /**
