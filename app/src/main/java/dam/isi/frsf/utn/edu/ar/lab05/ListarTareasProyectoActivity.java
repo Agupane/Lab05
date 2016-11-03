@@ -74,6 +74,7 @@ public class ListarTareasProyectoActivity extends AppCompatActivity {
                     }
                     default: {break;}
                 }
+                break;
             }
             case 1: // Editar actividad
             {
@@ -93,6 +94,7 @@ public class ListarTareasProyectoActivity extends AppCompatActivity {
                     }
                     default: {break;}
                 }
+                break;
             }
             default: {break;}
         }

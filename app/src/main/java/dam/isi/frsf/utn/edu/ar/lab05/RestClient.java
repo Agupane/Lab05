@@ -68,8 +68,8 @@ public class RestClient {
             if(tipoLogActivado == LOG_EXCEPTIONS|| tipoLogActivado == LOG_TODOS) {
                 Log.e("TEST-ARR", e.getMessage(), e);
             }
+          //  e.printStackTrace();
             throw new RestException(e.getMessage());
-            //e.printStackTrace();
         }
         catch (JSONException e) {
             throw new RestException(e.getMessage());

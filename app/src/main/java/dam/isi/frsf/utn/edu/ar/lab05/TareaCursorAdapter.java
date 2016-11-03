@@ -32,7 +32,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
     private LayoutInflater inflador;
     private TareaDAO tareaDao;
     private Context contexto;
-    private ToggleButton btnEstado;
+    private ToggleButton btnTrabajando;
     private Long tArranqueTrabajo,tFinalTrabajo,tiempoTrabajado;
     private Button btnEliminar,btnFinalizar,btnEditar;
     private Integer minutosTrabajados;
@@ -68,7 +68,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         btnFinalizar = (Button)   view.findViewById(R.id.tareaBtnFinalizada);
         btnEditar = (Button)   view.findViewById(R.id.tareaBtnEditarDatos);
         btnEliminar = (Button) view.findViewById(R.id.tareaBtnEliminar);
-        btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
+        btnTrabajando = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
 
         nombre.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
@@ -81,7 +81,10 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         responsable.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO_ALIAS)));
         finalizada.setChecked(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA))==1);
         finalizada.setTextIsSelectable(false);
-
+        if(finalizada.isChecked()){
+            btnFinalizar.setEnabled(false);
+            btnTrabajando.setEnabled(false);
+        }
         btnEliminar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEliminar.setOnClickListener(this);
 
@@ -91,8 +94,8 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         btnFinalizar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnFinalizar.setOnClickListener(this);
 
-        btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
-        btnEstado.setOnCheckedChangeListener(this);
+        btnTrabajando.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+        btnTrabajando.setOnCheckedChangeListener(this);
 
     }
 
@@ -129,7 +132,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
         if(isChecked)
         {
             tArranqueTrabajo= System.currentTimeMillis();
-            btnEstado.setChecked(true);
+            btnTrabajando.setChecked(true);
             Toast.makeText(contexto,"Ahora estas trabajando",Toast.LENGTH_SHORT).show();
         }
         else
@@ -143,7 +146,7 @@ public class TareaCursorAdapter extends CursorAdapter implements View.OnClickLis
             tiempoTrabajado = null;
             tArranqueTrabajo = null;
             tFinalTrabajo = null;
-            btnEstado.setChecked(false);
+            btnTrabajando.setChecked(false);
             changeCursor();
             Toast.makeText(contexto,"Dejaste de trabajar",Toast.LENGTH_SHORT).show();
         }

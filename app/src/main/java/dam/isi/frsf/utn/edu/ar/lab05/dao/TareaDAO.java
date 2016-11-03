@@ -48,7 +48,7 @@ public class TareaDAO {
     private static ProyectoOpenHelper dbHelper = new ProyectoOpenHelper(MyApplication.getAppContext());
     private static ProyectoApiRest daoApiRest = new ProyectoApiRest();
     private static final UsuarioDAO daoUsuario = UsuarioDAO.getInstance();
-    private static final ProyectoDAO daoProyecto = ProyectoDAO.getInstance();
+    private static ProyectoDAO daoProyecto = ProyectoDAO.getInstance();
     private SQLiteDatabase db;
     private List<Usuario> listaUsuarios;
 
@@ -216,7 +216,12 @@ public class TareaDAO {
                 Integer minutosTrabajados = resultadoTareas.getInt(3);
                 Prioridad prioridad = getPrioridad(resultadoTareas.getInt(4));
                 Usuario responsable = daoUsuario.getUsuario(resultadoTareas.getInt(5));
+
+                /** TODO BORRAR ESTO PORQUE  ERA NULO DAO PROYECTO */
+                daoProyecto = ProyectoDAO.getInstance();
+                daoProyecto.buscarEnLaNube(false); //TODO CAMBIAR ESTO Y HACER QUE SE SICNRONIZE LA NUBE CON LO LOCAL
                 Proyecto proyecto = daoProyecto.getProyecto(resultadoTareas.getInt(6));
+                daoProyecto.buscarEnLaNube(true);
                 Boolean finalizada;
                 if(resultadoTareas.getInt(7) == 0 )
                 {
@@ -232,6 +237,7 @@ public class TareaDAO {
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             System.out.println(e.getMessage());
             System.out.println("Bd exploto al internet buscar desvios");
         }
